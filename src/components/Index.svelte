@@ -1,13 +1,13 @@
 <script>
 	import { getContext } from "svelte";
-	import Demo from "$components/demo/Demo.svelte";
-	import WIP from "$components/helpers/WIP.svelte";
+	import Scifi from "$components/scifi/Scifi.svelte";
+	// import WIP from "$components/helpers/WIP.svelte";
 	// import Footer from "$components/Footer.svelte";
 
-	// const copy = getContext("copy");
+	const copy = getContext("copy");
 	// const data = getContext("data");
 </script>
 
-<WIP />
-<Demo />
+
+<Scifi copy={copy} />
 <!-- <Footer /> -->

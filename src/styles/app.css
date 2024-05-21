@@ -91,3 +91,8 @@ h5 {
 h6 {
 	font-size: var(--20px, 20px);
 }
+
+body, main {
+	font-family: var(--sans);
+	background: #0F0A0F;
+}

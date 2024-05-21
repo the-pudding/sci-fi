@@ -1,0 +1,443 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"undefine",
+				"undefinedValue"
+			],
+			[
+				"tra",
+				"translateX()"
+			],
+			[
+				"legen",
+				"legendHeight"
+			],
+			[
+				"color",
+				"color_selected"
+			],
+			[
+				"tran",
+				"translateX()"
+			],
+			[
+				"colo",
+				"color_selected"
+			],
+			[
+				"calcula",
+				"calculatePositions"
+			],
+			[
+				"trans",
+				"translateX()"
+			],
+			[
+				"current",
+				"current_activity_code"
+			],
+			[
+				"curr",
+				"currentActivityCode"
+			],
+			[
+				"add",
+				"addictiveScore"
+			],
+			[
+				"hab",
+				"habitualScore"
+			],
+			[
+				"proces",
+				"processScore"
+			],
+			[
+				"addic",
+				"addictiveScore"
+			],
+			[
+				"addi",
+				"addictiveScore"
+			],
+			[
+				"habit",
+				"habitualScore"
+			],
+			[
+				"trna",
+				"translateY()"
+			],
+			[
+				"cu",
+				"currentStage"
+			],
+			[
+				"curre",
+				"currentStageNumber"
+			],
+			[
+				"in",
+				"initial"
+			],
+			[
+				"text-t",
+				"text-decoration"
+			],
+			[
+				"a",
+				"absolute"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Add Channel"
+			],
+			[
+				"brows",
+				"Preferences: Browse Packages"
+			],
+			[
+				"prefere",
+				"Preferences: Browse Packages"
+			],
+			[
+				"term",
+				"Terminal: Open in project folder"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"color",
+				"UI: Customize Color Scheme"
+			],
+			[
+				"theme",
+				"UI: Customize Theme"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"colo",
+				"UI: Select Color Scheme"
+			],
+			[
+				"termin",
+				"Terminal: Open in project folder"
+			],
+			[
+				"Package Control: inst",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 138.0,
+		"history":
+		[
+			"ls"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/alvinchang/apps/pudding-scifi"
+	],
+	"file_history":
+	[
+		"/Users/alvinchang/data/scifi/claude_2024-05-16 11:22:23.073993.txt",
+		"/Users/alvinchang/data/scifi/claude_2024-05-16 14:20:38.897978.txt",
+		"/Users/alvinchang/data/scifi/claude_2024-05-16 14:30:36.911568.txt",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/redo-datav2.csv",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/redo-data.csv",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/1950s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/1960s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/1970s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/1980s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/1990s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/2000s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/2010s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/decades/2020s.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Pudding - Scifi/Data/Sci-Fi, Not Documentary, Not Short, Rating count at least 50000 (Sorted by Number of ratings Descending).html",
+		"/Users/alvinchang/Library/Caches/Transmit/7EB7DF36-E06E-494E-99D3-A3731CD8A54E/vps20765.dreamhostps.com/home/alv9n/alv9n.com/teaching/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/76406689-C910-410F-9550-38DEC72D7810/vps20765.dreamhostps.com/home/alv9n/.alias",
+		"/Users/alvinchang/Library/Caches/Transmit/40E3CA0B-8D36-49C6-87EE-F8CE3237E4FA/vps20765.dreamhostps.com/home/alv9n/alv9n.com/teaching/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/6ED918EF-7032-4501-897D-61F8A766341A/vps20765.dreamhostps.com/home/alv9n/alv9n.com/teaching/index.html",
+		"/Users/alvinchang/apps/leftovers/src/styles/app.css",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers/Leftovers.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers/Leftovers.canvas.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers-video/Leftovers.video.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/Index.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/helpers/Scrolly.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers/Leftovers.text.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers/Leftovers.modal.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/Meta.svelte",
+		"/Users/alvinchang/apps/leftovers/src/styles/variables.css",
+		"/Users/alvinchang/apps/leftovers/src/styles/font.css",
+		"/Users/alvinchang/apps/leftovers/docs/_app/immutable/chunks/p5.min.dd48a41d.js",
+		"/Users/alvinchang/apps/leftovers/src/data/data-composite.json",
+		"/Users/alvinchang/apps/leftovers/src/data/variables.json",
+		"/Users/alvinchang/apps/leftovers/tasks/fetch-google.js",
+		"/Users/alvinchang/apps/leftovers/src/data/variable-lookup.json",
+		"/Users/alvinchang/apps/leftovers/google.config.js",
+		"/Users/alvinchang/apps/leftovers/src/data/variable-lookup.csv",
+		"/Users/alvinchang/apps/leftovers/src/data/lookup-humanwords.json",
+		"/Users/alvinchang/apps/leftovers/src/data/copy.json",
+		"/Users/alvinchang/apps/leftovers/static/assets/leftovers/resize.py",
+		"/Users/alvinchang/apps/leftovers/src/components/Header.svelte",
+		"/Users/alvinchang/apps/leftovers/00 PLANNING/TODO.todo",
+		"/Users/alvinchang/Library/Application Support/Sublime Text/Packages/PlainTasks/tasks-eighties-colored.hidden-tmTheme",
+		"/Users/alvinchang/Library/Application Support/Sublime Text/Packages/PlainTasks/PlainTasks (OSX).sublime-settings",
+		"/Users/alvinchang/Library/Application Support/Sublime Text/Packages/PlainTasks/messages/Tutorial.todo",
+		"/Users/alvinchang/apps/leftovers/node_modules/tinycolor2/dist/tinycolor-min.js",
+		"/Users/alvinchang/apps/leftovers/src/data/lookup.json",
+		"/Users/alvinchang/data/leftovers/data/lookup-humanwords.json",
+		"/Users/alvinchang/apps/leftovers/.gitignore",
+		"/Users/alvinchang/apps/happy-days/google.config.js",
+		"/Users/alvinchang/apps/leftovers/src/data/data.json",
+		"/Users/alvinchang/Library/Application Support/Sublime Text/Packages/User/PlainTasks.sublime-settings",
+		"/Users/alvinchang/apps/leftovers/00 PLANNING/TODO.md",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers/LEFTOVERS.svelte",
+		"/Users/alvinchang/apps/leftovers/src/components/leftovers.svelte",
+		"/Users/alvinchang/Desktop/visual.html",
+		"/Users/alvinchang/data/leftovers/data/11-29-output/11-29-output.sdf",
+		"/Users/alvinchang/data/leftovers/data/11-29-output/11-29-output.NLSY97",
+		"/Users/alvinchang/data/leftovers/data/getFiles.sh",
+		"/Users/alvinchang/apps/alvinschang.com/getFiles.sh",
+		"/Users/alvinchang/data/leftovers/data/lookup.csv",
+		"/Users/alvinchang/Downloads/Lookup table - lookup (5).csv",
+		"/Users/alvinchang/apps/happy-days/src/styles/app.css",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/HappyDays.text.svelte",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/HappyDays.sprites.svelte",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/lookup.json",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/HappyDays.person.svelte",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/HappyDays.grid.svelte",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/HappyDays.svelte",
+		"/Users/alvinchang/apps/happy-days/src/components/happydays/people-all-nogroup.json",
+		"/Users/alvinchang/apps/happy-days/src/data/copy.json",
+		"/Users/alvinchang/apps/happy-days/src/components/Header.svelte",
+		"/Users/alvinchang/apps/happy-days/node_modules/caniuse-lite/data/features/css-scroll-timeline.js",
+		"/Users/alvinchang/apps/happy-days-draft/src/components/happydays/lookup.json",
+		"/Users/alvinchang/apps/happy-days-draft/src/components/happydays/HappyDays.sprites.svelte",
+		"/Users/alvinchang/apps/happy-days-draft/src/components/happydays/HappyDays.svelte",
+		"/Users/alvinchang/data/time-use/final_data/people.json",
+		"/Users/alvinchang/data/time-use/final_data/caseids.json",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/mass-shooting-tracker/atoms/default/server/render.js",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/mass-shooting-tracker/atoms/default/server/templates/main.html",
+		"/Users/alvinchang/Library/Caches/Transmit/B255D907-4A6A-4AD0-AFF2-B53455771EEA/vps20765.dreamhostps.com/home/alv9n/alv9n.com/data/index.html",
+		"/Users/alvinchang/Downloads/carta-backup-codes.txt",
+		"/Users/alvinchang/Library/Caches/Transmit/D0DB1A76-CE01-41F8-877A-7F78F1A60CBB/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Jupyter/runtime/jpserver-92412-open.html",
+		"/Users/alvinchang/Library/Jupyter/runtime/jpserver-68043-open.html",
+		"/Users/alvinchang/apps/happiest-project/data/test-corpus.txt",
+		"/Users/alvinchang/Library/Jupyter/runtime/jpserver-67696-open.html",
+		"/Users/alvinchang/apps/happiest-project/data/books1/epubtxt/3.epub.txt",
+		"/Users/alvinchang/apps/happiest-project/notes-happiest.md",
+		"/Users/alvinchang/apps/happiest-project/bookcorpus/out_txts/118359__unenchanted.txt",
+		"/Users/alvinchang/apps/happiest-project/bookcorpus/out_txts/42211__death-by-chocolate.txt",
+		"/Users/alvinchang/apps/happiest-project/bookcorpus/url_list.jsonl",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Current/Vox data video series/Florida/Map/Florida Funding by school  - PRE-12 Summary.csv",
+		"/Users/alvinchang/Library/Caches/Transmit/7766397F-B69F-494F-8850-4A9EE1300F03/vps20765.dreamhostps.com/home/alv9n/alv9n.com/teaching/le-data-exploration/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/18133549-EE6E-41AF-98A0-D9710F18ADBA/vps20765.dreamhostps.com/home/alv9n/alv9n.com/data/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/01D1A743-71B3-434B-ACF4-77BEFCC38257/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/02155A8F-AEE1-41C0-AACE-2CEDB05DC4A9/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/50ECB869-DC32-40ED-AC0D-7EDD44424F88/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/traffic.txt",
+		"/Users/alvinchang/Library/Caches/Transmit/D474508A-3ECB-4620-8F32-838A7856DB96/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/C21521E1-C93B-4944-99A4-B57D90C55415/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/traffic.txt",
+		"/Users/alvinchang/Library/Caches/Transmit/429020DC-6D02-4662-8167-B1B91778E433/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/traffic.txt",
+		"/Users/alvinchang/Library/Caches/Transmit/71DAC8C4-5A8E-4B43-A8A4-084175CEAF96/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/traffic.txt",
+		"/Users/alvinchang/Library/Caches/Transmit/3CB288AF-1208-47F3-B07F-58E33D7F6C03/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/BF25EB5B-63E7-4868-B68C-A80B94C52449/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/97FC2A56-FB06-455F-8A03-345B93F30BE4/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/0ECEBCD8-546D-42F3-8AFD-81BDC4C2A6F2/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/index.php",
+		"/Users/alvinchang/Library/Caches/Transmit/2BB9294E-8005-427E-8761-894506AE3C37/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/blog/content/2023-06-pinboard.md",
+		"/Users/alvinchang/Library/Caches/Transmit/9A82E163-348A-45E1-855C-839A3EA98968/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/index.html",
+		"/Users/alvinchang/data/state-policies/Readme.txt",
+		"/Users/alvinchang/data/state-policies/Graphs and Descriptive Analysis.R",
+		"/Users/alvinchang/Library/Jupyter/runtime/jpserver-70458-open.html",
+		"/Users/alvinchang/Library/Caches/Transmit/0AC7B1FA-A915-49BF-8F4C-FE6E52A67E6F/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/index.html",
+		"/Users/alvinchang/Library/Caches/Transmit/B8CF41D6-0E97-49D6-9FDB-9B7B8999105E/vps20765.dreamhostps.com/home/alv9n/alvinschang.com/index.html",
+		"/Users/alvinchang/apps/kimchi2/kimchi/src/styles/app.css",
+		"/Users/alvinchang/apps/interactive-monorepo/template/atoms/default/client/js/main.js",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Tools/Interactive template/index.html",
+		"/Users/alvinchang/Library/CloudStorage/GoogleDrive-alvinschang@gmail.com/My Drive/Tools/Interactive template/script.js",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/heat-learning/atoms/default/client/js/app.js",
+		"/Users/alvinchang/Downloads/productDownload_2023-04-26T073326/ACSDT5Y2019.B25119-Table-Notes.txt",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/senate-broken/atoms/default/server/render.js",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/biodiversity-history/atoms/default/client/js/app.js",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/us-housing/assets/us-state.json",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/food-monopoly/atoms/default/server/render.js",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/food-monopoly/atoms/default/server/templates/main.html",
+		"/Users/alvinchang/apps/interactive-monorepo/projects/food-monopoly/atoms/default/client/js/app.js",
+		"/Users/alvinchang/apps/kimchi/static/assets/kimchi/mobile/scene2/books.svg",
+		"/Users/alvinchang/apps/kimchi/static/assets/kimchi/mobile/scene2/poster2.svg",
+		"/Users/alvinchang/apps/kimchi/static/assets/kimchi/mobile/scene2/poster1.svg",
+		"/Users/alvinchang/apps/kimchi/static/assets/kimchi/desktop/scene2/books.svg"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 125.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 49.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "pudding-scifi.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 450.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 574.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 301.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
