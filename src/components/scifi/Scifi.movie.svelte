@@ -3,9 +3,6 @@
 
 	const year = data["first_year"];
 	let addClass = "";
-	if (data["title_year"] == "Interstellar (2014)") {
-		addClass = "hl";
-	}
 </script>
 
 <div class="movie {addClass}" style="
@@ -18,31 +15,29 @@
 		        top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
 		        bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
 		        background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
-	"
->
-{data[sortedColumn]}
-<div class='tooltip'>{data["title_year"]}</div>
+">
+	<div class='tooltip'>{data["title_year"]}<br>{data[sortedColumn]}</div>
 </div>
 <style>
 	.movie {
 		position: absolute;
-		border: 1px solid #0F0A0F;
+		border: 1px solid rgba(0,0,0,0.4);
 		box-sizing: border-box;
-		background: black;
-		transition-timing-function: cubic-bezier(0.420, 0.000, 0.580, 1.000); /* ease-in-out */
-		font-size: 10px;
+		transition-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190); /* easeInCubic */
+		font-size: 8px;
 		text-align: center;
 		-webkit-user-select: none; /* Safari */
 		-ms-user-select: none; /* IE 10 and IE 11 */
 		user-select: none; /* Standard syntax */
+/*		overflow: hidden;*/
 	}
 	.movie.hl {
-		border: 2px solid #fff;
+		background: black !important;
 	}
 	.tooltip {
 		position: absolute;
 		left: 0;
-		bottom: 105%;
+		bottom: 110%;
 		background: black;
 		color: white;
 		padding: 4px;

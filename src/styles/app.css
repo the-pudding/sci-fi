@@ -94,5 +94,41 @@ h6 {
 
 body, main {
 	font-family: var(--sans);
-	background: #0F0A0F;
+	background: #2C252F;
+}
+.step {
+	pointer-events: none;
+	height: auto;
+	min-height: 0vh;
+	position: relative;
+	color: white;
+	padding: 50vh 0 90vh;
+	box-sizing: content-box;
+}
+
+@media screen and (max-width: 600px) {
+	.step {
+		padding: 70vh 0 150vh;
+	}
+}
+.textContainer {
+	width: 96%;
+	margin: 0px auto;
+	color: #fff !important;	
+	text-align: left;
+	font-size: 1.11rem;
+	line-height: 1.8rem;
+/*	font-weight: normal;*/
+	z-index: 3;
+	overflow-x: hidden;
+	border-radius: 2px;
+	max-width: 620px;
+	background: black;
+	padding: 20px;
+}
+@media screen and (max-width: 600px) {
+	.textContainer {
+		font-size: 1rem;
+		line-height: 1.6rem;
+	}
 }

@@ -1,180 +1,206 @@
 <script>
 	import Scrolly from "$components/helpers/Scrolly.svelte";
-	import Movie from "$components/scifi/Scifi.movie.svelte";
+	import Decade from "$components/scifi/Scifi.decade.svelte";
+	import Text from "$components/scifi/Scifi.text.svelte";
 	export let copy;
 	import movies from "$data/movies.json";
+	import { groupByDecade, sortByAttributes, getContrastingColors, options } from '$components/helpers/helpers.js';
+	const decades = groupByDecade(movies);
 
 	let h = 700;
 	let w = 800;
+	let value;
+	let decadesShown;
     let objectSize = { width: 24, height: 14 }; // Adjust the size as needed
-    const options = [
-    	"Category", "Social Issues", "Era", "Present/Near Future", "Sci Exploration", 
-    	"Dystopian/Post-Apoc", "Utopian/Idealistic", "Triumph of Humanity", "Failure of Humanity", 
-    	"World Before", "World During", "World After", "Less Suffering", "More Abundance", 
-    	"More Egalitarianism", "More Human Agency", "More Sense of Wonder", "Tech Improves Existence", 
-    	"Comments on Climate", "Comments on Mental Health", "Critique Women's Rights", 
-    	"Critique Politics", "Critique Religion", "Critique War", "Critique Science/Tech", 
-    	"Tech Solves Problem", "Existential Threat", "World_v_Reality", "Type of Conflict"
-    	];
+    let viewType = "";
+    let translate = {x: 0, y: 0, z: 1};
+    
 
     let sortedColumn = "Social Issues";
     let positions = {};
+    let bottomPadding = 100;
+    let barHeight = 50;
 
     $: positions = calculatePositions();
 
-    function sortByAttributes(array, primaryAttribute, secondaryAttribute) {
-    	return array.sort((a, b) => {
-    		const aPrimary = String(a[primaryAttribute]);
-    		const bPrimary = String(b[primaryAttribute]);
-    		const aSecondary = String(a[secondaryAttribute]);
-    		const bSecondary = String(b[secondaryAttribute]);
-
-    		const aIsNA = aPrimary.startsWith('N/A');
-    		const bIsNA = bPrimary.startsWith('N/A');
-
-    		if (aIsNA && !bIsNA) {
-            return -1; // a should come before b
-        }
-        if (!aIsNA && bIsNA) {
-            return 1; // b should come before a
-        }
-        if (aPrimary < bPrimary) {
-        	return -1;
-        }
-        if (aPrimary > bPrimary) {
-        	return 1;
-        }
-        if (aSecondary < bSecondary) {
-        	return -1;
-        }
-        if (aSecondary > bSecondary) {
-        	return 1;
-        }
-        return 0;
-    });
-    }
-
-    
-    function getContrastingColors(uniqueValues) {
-    	const og_colors = ['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a'];
-    	const step = Math.floor(og_colors.length / uniqueValues);
-    	const contrastingColors = [];
-    	for (let i = 0; i < uniqueValues; i++) {
-    		contrastingColors.push(og_colors[i * step]);
-    	}
-    	return contrastingColors;
-    }
-
-
     function calculatePositions() {
-    	objectSize.width = w * h / 60000;
-    	objectSize.height = w * h / 100000;
-    	let objects = sortByAttributes([...movies], sortedColumn, "decade");
-
-    	const width = objectSize.width;
-    	const height = objectSize.height;
-    	const currentPositions = {};
-    	
-
-        // Find unique decades
+    	// Sort the movies by the specified attributes and group by decade
+    	const objects = sortByAttributes([...movies], sortedColumn, "decade");
     	const uniqueDecades = [...new Set(objects.map(obj => obj.decade))];
     	const decadeCount = uniqueDecades.length;
 
-        const effectiveContainerWidth = w - 60; // Subtracting 30px from both sides
-        const effectiveContainerHeight = h - 60; // Subtracting 30px from top and bottom
-        const spacePerDecade = effectiveContainerWidth / decadeCount;
+   		// Calculate effective container dimensions
+    	const effectiveContainerWidth = w;
+    	
+    	const effectiveContainerHeight = h;
 
-        // Create a map to assign a unique color for each unique value of sortedColumn
-        const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
-        const colors = getContrastingColors(uniqueValues.length);
-        const valueColorMap = {};
-        uniqueValues.forEach((value, index) => {
-        	valueColorMap[value] = colors[index % colors.length];
+    	// Calculate object sizes to ensure 200 elements per decade fit
+    	const elementsPerDecade = 200;
+    	const spacePerDecade = effectiveContainerWidth / decadeCount;
+    	const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
+    	objectSize.width = objectWidth;
+    	objectSize.height = objectWidth * 1.5;
+    	
+
+    	// Assign unique colors to each unique value of the sorted column
+    	const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
+    	const colors = getContrastingColors(uniqueValues.length);
+    	const valueColorMap = uniqueValues.reduce((map, value, index) => {
+    		map[value] = colors[index % colors.length];
+    		return map;
+    	}, {});
+
+    	// Group objects by decade
+    	const groupedByDecade = objects.reduce((group, obj) => {
+    		group[obj.decade] = group[obj.decade] || [];
+    		group[obj.decade].push(obj);
+    		return group;
+    	}, {});
+
+    	const positions = {};
+
+	    // Calculate the number of elements per row based on screen aspect ratio
+	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
+	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
+	    let elementsPerRow = 10;
+	    let divider = 1.5;
+	    let divider2 = 1.25;
+	    if (aspectRatio < 1.2) {
+	    	elementsPerRow = 5;
+	    	divider = 1;
+	    	divider2 = 2.25;
+	    }
+	    const elementsPerCol = 190 / elementsPerRow;
+	    barHeight = (elementsPerCol * objectSize.height);
+	   
+	    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
+
+	    if (viewType == "zoom1950") {
+	    	translate.z = 8;
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z);
+	    	translate.x = w;
+	    	
+		} else if (viewType == "zoom1950v2") {
+			translate.z = divider;
+	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
+	    	translate.x = w / 2;
+		} else if (viewType == "zoom2020") {
+	    	translate.z = 8;
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z);
+	    	translate.x = w * -6;
+	    	
+		} else if (viewType == "zoom2020v2") {
+			translate.z = divider;
+	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
+	    	translate.x = -w / divider2;
+		}  else {
+			translate = {x: 0, y: 0, z: 1};
+		}
+
+	    // Iterate through each decade to calculate positions
+	    uniqueDecades.forEach((decade, decadeIndex) => {
+	    	const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
+	    	let xPos = 0;
+	    	let yPos = effectiveContainerHeight - objectSize.height - bottomPadding;
+
+	    	decadeObjects.forEach((obj, index) => {
+            // If the index is a multiple of elementsPerRow, move to next row
+	    		if (index % elementsPerRow === 0 && index > 0) {
+	    			xPos = 0;
+	    			yPos -= objectSize.height - 1;
+	    		}
+
+	    		const objIndex = obj.index;
+
+            // Calculate the actual positions within the relative container
+            const containerWidth = (w * 0.125) - 20; // 12.5% of the width minus some padding
+            const xRelativePos = (xPos / spacePerDecade) * containerWidth + leftPadding;
+            const yRelativePos = (yPos / effectiveContainerHeight) * h;
+
+            positions[objIndex] = {
+            	x: `${xRelativePos}px`,
+            	y: `${yRelativePos}px`,
+            	width: `${objectSize.width}px`,
+            	height: `${objectSize.height}px`,
+            	speed: Math.random() * 1000 + 200,
+                color: valueColorMap[obj[sortedColumn]] // Assign color based on sortedColumn value
+            };
+
+            // Move to the next position in the row
+            xPos += objectSize.width;
         });
+	    });
 
-        // Group objects by decade
-        const groupedByDecade = {};
-        objects.forEach(obj => {
-        	if (!groupedByDecade[obj.decade]) {
-        		groupedByDecade[obj.decade] = [];
-        	}
-        	groupedByDecade[obj.decade].push(obj);
-        });
+	    return positions;
+	}
 
-        // Iterate through each decade to calculate positions
-        uniqueDecades.forEach((decade, decadeIndex) => {
-        	const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
-        	let initialXPos = 30 + decadeIndex * spacePerDecade;
-        	let xPos = initialXPos;
-        	let yPos = effectiveContainerHeight - height;
 
-        	decadeObjects.forEach((obj, i) => {
-                // If xPos exceeds the allocated space for the decade, move to next row
-        		if (xPos + width > initialXPos + spacePerDecade) {
-        			xPos = initialXPos;
-        			yPos -= height;
-        		}
+	function triggerChange() {
+		positions = calculatePositions();
+	}
 
-        		let index = obj.index;
-
-        		currentPositions[index] = { x: xPos, y: yPos };
-        		positions[index] = { 
-        			x: `${xPos}px`, 
-        			y: `${yPos}px`, 
-        			width: `${width}px`, 
-        			height: `${height}px`, 
-        			speed: Math.random()*1000 + 200,
-                    color: valueColorMap[obj[sortedColumn]] // Assign color based on sortedColumn value
-                };
-
-                // Move to the next position in the row
-                xPos += width;
-            });
-        });
-
-        return positions;
-    }
-
-    function dispatchResize() {
-    	positions = calculatePositions();
-    }
-
-    function sortedChanged() {
-    	positions = calculatePositions();
-    }
-
-    $: {
-    	positions = calculatePositions();
-    	w = w;
-    }
+	$: {
+		w = w;
+		h = h;
+		value = value === undefined ? 0 : value;
+		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
+		sortedColumn = copy.timeline[value]["variable"];
+		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
+		positions = calculatePositions();
+		barHeight;
+	}
 </script>
 
-<svelte:window on:resize={dispatchResize} />
+<svelte:window on:resize={triggerChange} />
 
+<div class="outsideContainer">
+	<section id="scrolly">
 
-<div class="chartContainer" bind:clientWidth={w} bind:clientHeight={h}>
-	<select bind:value={sortedColumn} on:change={sortedChanged} id="sortedColumn">
-		{#each options as option}
-		<option value={option}>{option}</option>
-		{/each}
-	</select>
+		<div class="visualContainer" bind:clientWidth={w} bind:clientHeight={h}>
+			<div class="zoomContainer {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
+				{#each Object.keys(decades) as decade}
+				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown}/>
+				{/each}
+			</div>
+		</div>
 
-	{#each movies as movie}
-	<Movie data={movie} position={positions[movie["index"]]} sortedColumn={sortedColumn}/>
-	{/each}
+		<Scrolly bind:value top={100}>
+			{#each copy.timeline as step_obj, i}
+			{@const active = value === i}
+			{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
+			<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
+				<Text sortedColumn={sortedColumn} copy={step_obj.text} type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
+			</div>
+			{/each}
+		</Scrolly>
+
+	</section>
 </div>
 
 <style>
+	.visualContainer {
+		overflow: hidden;
+		position: sticky;
+		top: 0px;
+		left: 0px;
+		display: block;
+		width: 100%;
+		padding: 0 0px;
+		height: 100vh;
+	}
+	.zoomContainer {
+		width: 100%;
+		height: 100vh;
+		transition: transform 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transform: perspective(0) translate3d(0, 0, 0) scale(1);
+		transform-origin: top left;
+	}
+	
 	#sortedColumn {
 		position: absolute;
 		left: 10px;
 		top: 10px;
 	}
-	.chartContainer {
-		display: block;
-		position: relative;
-		width: 100%;
-		padding: 0 20px;
-		height: 100vh;
-	}
+	
 </style>
