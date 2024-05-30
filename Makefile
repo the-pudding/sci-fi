@@ -4,6 +4,7 @@ github:
 	rm -rf docs
 	cp -r build docs
 	touch docs/.nojekyll
+	npx staticrypt docs/index.html -p $(shell grep PASSWORD .env | cut -d '=' -f2) -d docs
 	git add -A
 	git commit -m "update github pages"
 	git push
