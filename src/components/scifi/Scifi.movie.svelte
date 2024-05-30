@@ -21,7 +21,7 @@
 <style>
 	.movie {
 		position: absolute;
-		border: 1px solid rgba(0,0,0,0.4);
+		border: 1px solid #2C252F;
 		box-sizing: border-box;
 		transition-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190); /* easeInCubic */
 		font-size: 8px;
@@ -44,7 +44,7 @@
 		display: none;
 		width: 100px;
 		text-align: left;
-		font-size: 13px;
+		font-size: 8px;
 		pointer-events: none;
 	}
 	.movie:hover {

@@ -8,20 +8,26 @@
 	const decades = groupByDecade(movies);
 
 	let h = 700;
-	let w = 800;
+	let w = 1;
 	let value;
+	let loaded = "noAnimation";
 	let decadesShown;
-    let objectSize = { width: 24, height: 14 }; // Adjust the size as needed
-    let viewType = "";
-    let translate = {x: 0, y: 0, z: 1};
+    let objectSize = { width: 24, height: 14 };
+    let viewType = "zoom1950";
+    let sceneNum = 0;
+    let progress = 0;
+    const sceneMaxLookup = {
+    	"1950": 5,
+    	"2020": 6,
+    	"2030": 4
+    }
+    let translate = {x: w, y: 0, z: 8};
     
 
     let sortedColumn = "Social Issues";
     let positions = {};
     let bottomPadding = 100;
     let barHeight = 50;
-
-    $: positions = calculatePositions();
 
     function calculatePositions() {
     	// Sort the movies by the specified attributes and group by decade
@@ -63,39 +69,49 @@
 	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
 	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
 	    let elementsPerRow = 10;
-	    let divider = 1.5;
-	    let divider2 = 1.25;
-	    if (aspectRatio < 1.2) {
+	    let divider = 1.2;
+	    if (aspectRatio < 0.9) {
 	    	elementsPerRow = 5;
 	    	divider = 1;
-	    	divider2 = 2.25;
+	    } else if (aspectRatio < 1.4) {
+	    	elementsPerRow = 8;
+	    	divider = 1.2;
 	    }
 	    const elementsPerCol = 190 / elementsPerRow;
 	    barHeight = (elementsPerCol * objectSize.height);
-	   
+
 	    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
 
 	    if (viewType == "zoom1950") {
 	    	translate.z = 8;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z);
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) );
 	    	translate.x = w;
 	    	
-		} else if (viewType == "zoom1950v2") {
-			translate.z = divider;
+	    } else if (viewType == "zoom1950v2") {
+	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
 	    	translate.x = w / 2;
-		} else if (viewType == "zoom2020") {
+	    } else if (viewType == "zoom2020") {
 	    	translate.z = 8;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z);
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2020"] * barHeight * (sceneMaxLookup["2020"]/(sceneMaxLookup["2020"]+1))* (translate.z));
 	    	translate.x = w * -6;
 	    	
-		} else if (viewType == "zoom2020v2") {
-			translate.z = divider;
+	    } else if (viewType == "zoom2020v2") {
+	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
-	    	translate.x = -w / divider2;
-		}  else {
-			translate = {x: 0, y: 0, z: 1};
-		}
+	    	translate.x = -w / divider;
+	    } else if (viewType == "zoom2030") {
+	    	translate.z = 8;
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2030"] * barHeight * (sceneMaxLookup["2030"]/(sceneMaxLookup["2030"]+1))* (translate.z));
+	    	translate.x = w * -8;
+	    	
+	    } else if (viewType == "zoom2030v2") {
+	    	translate.z = divider;
+	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
+	    	translate.x = -w / divider;
+	    } else {
+	    	translate = {x: 0, y: 0, z: 1};
+	    }
 
 	    // Iterate through each decade to calculate positions
 	    uniqueDecades.forEach((decade, decadeIndex) => {
@@ -114,15 +130,15 @@
 
             // Calculate the actual positions within the relative container
             const containerWidth = (w * 0.125) - 20; // 12.5% of the width minus some padding
-            const xRelativePos = (xPos / spacePerDecade) * containerWidth + leftPadding;
-            const yRelativePos = (yPos / effectiveContainerHeight) * h;
+            const xRelativePos = (xPos / spacePerDecade) * 100 + (spacePerDecade - objectSize.width*elementsPerRow)/spacePerDecade*50;
+            const yRelativePos = (yPos / effectiveContainerHeight) * 100;
 
             positions[objIndex] = {
-            	x: `${xRelativePos}px`,
-            	y: `${yRelativePos}px`,
-            	width: `${objectSize.width}px`,
+            	x: `${xRelativePos}%`,
+            	y: `${yRelativePos}%`,
+            	width: `${objectSize.width + 1}px`,
             	height: `${objectSize.height}px`,
-            	speed: Math.random() * 1000 + 200,
+            	speed: Math.random() * 1200 + 100,
                 color: valueColorMap[obj[sortedColumn]] // Assign color based on sortedColumn value
             };
 
@@ -142,12 +158,18 @@
 	$: {
 		w = w;
 		h = h;
+		progress;
 		value = value === undefined ? 0 : value;
 		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
 		sortedColumn = copy.timeline[value]["variable"];
 		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
+		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
 		positions = calculatePositions();
+		console.log(translate.y)
 		barHeight;
+		if (value > 0) {
+			loaded = ""
+		}
 	}
 </script>
 
@@ -157,14 +179,14 @@
 	<section id="scrolly">
 
 		<div class="visualContainer" bind:clientWidth={w} bind:clientHeight={h}>
-			<div class="zoomContainer {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
+			<div class="zoomContainer {loaded} {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
 				{#each Object.keys(decades) as decade}
-				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown}/>
+					<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress}/>
 				{/each}
 			</div>
 		</div>
 
-		<Scrolly bind:value top={100}>
+		<Scrolly bind:value top={0} bind:progress={progress}>
 			{#each copy.timeline as step_obj, i}
 			{@const active = value === i}
 			{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
@@ -195,6 +217,10 @@
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transform: perspective(0) translate3d(0, 0, 0) scale(1);
 		transform-origin: top left;
+	}
+
+	.zoomContainer.noAnimation {
+		transition: transform 0ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	
 	#sortedColumn {

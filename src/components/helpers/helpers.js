@@ -49,7 +49,7 @@ export function sortByAttributes(array, primaryAttribute, secondaryAttribute) {
 }
 
 export function getContrastingColors(uniqueValues) {
-    const og_colors = ['#fccffa', '#fbbbe7', '#fba7d1', '#f894b7', '#f3819a', '#eb707a', '#de6259'];
+    const og_colors = ["#fb04d3", "#f541cb", "#ee5cc4", "#e671be", "#dc83b9", "#d093b6", "#c3a2b3"].reverse();
     const step = Math.floor((og_colors.length - 2) / (uniqueValues - 2));
     const contrastingColors = [og_colors[0]]; // Always include the first color
 

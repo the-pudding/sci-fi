@@ -24,6 +24,7 @@
 	let nodes = [];
 	let intersectionObservers = [];
 	let container;
+	export let progress;
 
 	$: top, bottom, update();
 
@@ -33,18 +34,50 @@
 	};
 
 	const mostInView = () => {
-		let maxRatio = 0;
-		let maxIndex = 0;
-		for (let i = 0; i < steps.length; i++) {
-			if (steps[i] > maxRatio) {
-				maxRatio = steps[i];
-				maxIndex = i;
-			}
-		}
+  let maxRatio = 0;
+  let maxIndex = -1; // initialize to -1 to handle the case when no step is intersecting
 
-		if (maxRatio > 0) value = maxIndex;
-		else value = undefined;
-	};
+  // Get the viewport height
+  const viewportHeight = window.innerHeight;
+
+  for (let i = 0; i < steps.length; i++) {
+    if (steps[i] > 0) {
+      // Check if the current step is intersecting with the top of the screen
+      const currentStepElement = nodes[i];
+      const currentStepTop = currentStepElement.offsetTop;
+      const currentStepHeight = currentStepElement.offsetHeight;
+      const topOfScreenPosition = window.pageYOffset;
+
+      if (currentStepTop <= topOfScreenPosition && currentStepTop + currentStepHeight >= topOfScreenPosition) {
+        maxRatio = steps[i];
+        maxIndex = i;
+      }
+    }
+  }
+
+  if (maxIndex >= 0) {
+    value = maxIndex;
+
+    // Get the current step element
+    const currentStepElement = nodes[maxIndex];
+
+    // Calculate the scroll progress based on the current step and top of the screen
+    const currentStepTop = currentStepElement.offsetTop;
+    const currentStepHeight = currentStepElement.offsetHeight;
+    const scrollPosition = window.pageYOffset;
+    const scrollProgressInStep = Math.max(
+      0,
+      Math.min(
+        1,
+        (scrollPosition - currentStepTop) / currentStepHeight
+      )
+    );
+
+   	progress = scrollProgressInStep;
+  } else {
+    value = undefined;
+  }
+};
 
 	const createObserver = (node, index) => {
 		const handleIntersect = (e) => {
