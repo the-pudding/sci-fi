@@ -68,6 +68,13 @@
 	}
 }
 
+
+
+
+:global(.wordmark svg path) {
+/*		fill: white;*/
+}
+
 h1 {
 	font-size: var(--48px, 48px);
 }
@@ -95,7 +102,7 @@ h6 {
 body, main {
 	font-family: var(--serif);
 /*	background: #2C252F;*/
-background: #1c0526;
+background: #200724;
 }
 .step {
 	pointer-events: none;

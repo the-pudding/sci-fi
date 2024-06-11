@@ -16,9 +16,10 @@
     let viewType = "zoom1950";
     let sceneNum = 0;
     let progress = 0;
+    let sceneRatio = 0.4;
     const sceneMaxLookup = {
-    	"1950": 5,
-    	"2020": 6,
+    	"1950": 4,
+    	"2020": 4,
     	"2030": 4
     }
     let translate = {x: w, y: 0, z: 8};
@@ -81,30 +82,29 @@
 	    barHeight = (elementsPerCol * objectSize.height);
 
 	    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
-
+	    const sceneWidth = barHeight * sceneRatio * 8
+	    let multiplier = w / sceneWidth;
 	    if (viewType == "zoom1950") {
-	    	translate.z = 8;
+	    	translate.z = 8 * multiplier*1.01;
 	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) );
 	    	translate.x = w;
-	    	
 	    } else if (viewType == "zoom1950v2") {
 	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
-	    	translate.x = w / 2;
+	    	translate.x = w / 2 + (((sceneWidth/8) - spacePerDecade) / 2);
 	    } else if (viewType == "zoom2020") {
-	    	translate.z = 8;
+	    	translate.z = 8 * multiplier*1.01;
 	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2020"] * barHeight * (sceneMaxLookup["2020"]/(sceneMaxLookup["2020"]+1))* (translate.z));
-	    	translate.x = w * -6;
-	    	
+	    	translate.x = w * -translate.z;
 	    } else if (viewType == "zoom2020v2") {
 	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
 	    	translate.x = -w / divider;
+	    	translate.x = w - (sceneWidth/8) - w/4;
 	    } else if (viewType == "zoom2030") {
-	    	translate.z = 8;
+	    	translate.z = 8 * multiplier*1.01;
 	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2030"] * barHeight * (sceneMaxLookup["2030"]/(sceneMaxLookup["2030"]+1))* (translate.z));
-	    	translate.x = w * -8;
-	    	
+	    	translate.x = w * -translate.z;
 	    } else if (viewType == "zoom2030v2") {
 	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
@@ -112,7 +112,6 @@
 	    } else {
 	    	translate = {x: 0, y: 0, z: 1};
 	    }
-
 	    // Iterate through each decade to calculate positions
 	    uniqueDecades.forEach((decade, decadeIndex) => {
 	    	const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
@@ -152,6 +151,10 @@
 
 
 	function triggerChange() {
+		loaded = "noAnimation"
+		setTimeout(function() {
+			loaded = ""
+		},2000)
 		positions = calculatePositions();
 	}
 
@@ -165,7 +168,6 @@
 		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
 		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
 		positions = calculatePositions();
-		console.log(translate.y)
 		barHeight;
 		if (value > 0) {
 			loaded = ""
@@ -181,7 +183,7 @@
 		<div class="visualContainer" bind:clientWidth={w} bind:clientHeight={h}>
 			<div class="zoomContainer {loaded} {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
 				{#each Object.keys(decades) as decade}
-					<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress}/>
+					<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio}/>
 				{/each}
 			</div>
 		</div>
@@ -190,8 +192,11 @@
 			{#each copy.timeline as step_obj, i}
 			{@const active = value === i}
 			{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
+			
 			<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
+				{#if step_obj.text != ""}	
 				<Text sortedColumn={sortedColumn} copy={step_obj.text} type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
+				{/if}
 			</div>
 			{/each}
 		</Scrolly>

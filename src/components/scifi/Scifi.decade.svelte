@@ -1,7 +1,7 @@
 <script>
 	import Movie from '$components/scifi/Scifi.movie.svelte';
 	import Scene from "$components/scifi/Scifi.scene.svelte";
-	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, sceneMaxLookup, progress;
+	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, sceneMaxLookup, progress, sceneRatio;
 	let opacity = 0;
 
 	$: {
@@ -23,11 +23,12 @@
 		<Movie data={movie} position={positions[movie.index]} sortedColumn={sortedColumn} />
 		{/each}
 	</div>
-	{#if ["1950", "2020"].indexOf(decade) != -1}
-		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} nextDecade=""/>
+	{#if ["1950"].indexOf(decade) != -1}
+		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} nextDecade=""/>
 	{/if}
 	{#if decade == "2020"}
-		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} nextDecade="nextDecade" />
+		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} nextDecade="nextDecade"/>
+		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} nextDecade="nextDecade" />
 	{/if}
 </div>
 

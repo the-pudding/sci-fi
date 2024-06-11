@@ -8,9 +8,23 @@
 			>{@html wordmark}</a
 		>
 	</div>
+	<div class="filler"></div>
 </header>
 
 <style>
+	header {
+		background: #e9abff;
+		position: relative;
+	}
+	.filler {
+		content: "";
+		height: 4px;
+		top: 99%;
+		position: absolute;
+		width: 100%;
+		left: 0px;
+		background: #e9abff;
+	}
 	.wordmark {
 		max-width: 10em;
 		margin: 0 auto;
@@ -28,6 +42,6 @@
 	}
 
 	:global(.wordmark svg path) {
-		fill: white;
+/*		fill: white;*/
 	}
 </style>
