@@ -16,6 +16,7 @@
 		background: #e9abff;
 		position: relative;
 	}
+
 	.filler {
 		content: "";
 		height: 4px;
@@ -40,8 +41,8 @@
 	.wordmark a:hover {
 		background-color: transparent;
 	}
-
-	:global(.wordmark svg path) {
-/*		fill: white;*/
+	
+	header .wordmark svg path {
+		fill: black !important;
 	}
 </style>

@@ -5,14 +5,11 @@
 	let opacity = 0;
 
 	$: {
-    	// decadesShown;
-
 		if (decadesShown.indexOf(String(decade)) != -1) {
 			opacity = 1;
 		} else {
 			opacity = 0;
 		}
-    	// console.log(decadesShown, opacity, decadesShown.indexOf(String(decade)))
 	}
 </script>
 
@@ -20,7 +17,7 @@
 	<h2>{decade}</h2>
 	<div class="movie-container">
 		{#each movies as movie}
-		<Movie data={movie} position={positions[movie.index]} sortedColumn={sortedColumn} />
+		<Movie data={movie} position={positions[movie.index]} sortedColumn={sortedColumn} {decade}/>
 		{/each}
 	</div>
 	{#if ["1950"].indexOf(decade) != -1}
@@ -43,6 +40,10 @@
 		transition: opacity 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transform: perspective(0) translate3d(0, 0, 0) scale(1);
+		z-index: 1;
+	}
+	.decade-container:hover {
+		z-index: 10;
 	}
 	.movie-container {
 		width: 100%;
@@ -51,10 +52,12 @@
 	.decade-container h2 {
 		position: absolute;
 		left: 0;
-		bottom: 60px;
+		bottom: 40px;
 		width: 100%;
 		text-align: center;
-		font-size: var(--15px);
+		font-size: 1.5em;
 		color: white;
+		opacity: 0.5;
+		font-family: CozetteVector, Courier, monospace;
 	}
 </style>

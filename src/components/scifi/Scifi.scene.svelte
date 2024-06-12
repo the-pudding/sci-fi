@@ -94,12 +94,7 @@
 			transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			overflow: hidden;
 			pointer-events: none;
-			image-rendering: -moz-crisp-edges;
-			image-rendering: -moz-crisp-edges;
-			image-rendering: -o-crisp-edges;
-			image-rendering: -webkit-optimize-contrast;
-			-ms-interpolation-mode: nearest-neighbor;
-			background: #200724;
+/*			background: #200724;*/
 			border-bottom: 1px solid #200724;
 		}
 		.scene .background_color {
@@ -123,7 +118,7 @@
 			height: 20%;
 			width: 100%;
 		}
-		.scene-1950 .foreground_color {
+		.scene-1950 .foreground_color, .scene-2020 .foreground_color  {
 			background: #200724;
 			height: 43vh;
 		}
@@ -187,6 +182,9 @@
 			left: 0px;
 			z-index: 10000;
 			transform: translate3d(0,0,10px);
+		}
+		.scene-2030 .shadow {
+			background: linear-gradient(to bottom, rgba(28, 5, 38, 0) 0%, #a35c9e 50%);
 		}
 		.scene_containers.right {
 			left: auto;
