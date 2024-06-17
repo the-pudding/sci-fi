@@ -211,7 +211,7 @@
 		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
 		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
 
-		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded) {
+		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
 			positions = calculatePositions();
 			prev_viewType = viewType;
 			prev_sceneNum = sceneNum;	
