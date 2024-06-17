@@ -61,7 +61,7 @@
 	}
 
 	.toggle--inner button:focus {
-		box-shadow: 0 0 4px 0 var(--color-focus);
+		box-shadow: 0 0 4px 0 var(--color-purple);
 	}
 
 	.toggle--slider {
@@ -78,7 +78,7 @@
 	}
 
 	.toggle--slider button:focus {
-		box-shadow: 0 0px 4px var(--color-focus);
+		box-shadow: 0 0px 4px var(--color-purple);
 	}
 
 	.toggle--slider button::before {

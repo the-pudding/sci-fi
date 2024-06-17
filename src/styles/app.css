@@ -99,7 +99,7 @@ body, main {
 background: #200724;
 }
 #scrolly_container {
-	margin-top: -100vh;
+	margin-top: -80vh;
 }
 .step {
 	pointer-events: none;
@@ -148,6 +148,13 @@ background: #200724;
 	backdrop-filter: blur(2px);
 	z-index: 2;
 }
+.step.longtext.lightbg {
+	background: rgb(163,92,158);
+	background: -moz-linear-gradient(0deg, rgba(163,92,158,0) 0%, rgba(163,92,158,1) 4%, rgba(163,92,158,1) 95%, rgba(163,92,158,0) 100%);
+	background: -webkit-linear-gradient(0deg, rgba(163,92,158,0) 0%, rgba(163,92,158,1) 4%, rgba(163,92,158,1) 95%, rgba(163,92,158,0) 100%);
+	background: linear-gradient(0deg, rgba(163,92,158,0) 0%, rgba(163,92,158,1) 4%, rgba(163,92,158,1) 95%, rgba(163,92,158,0) 100%);
+}
+
 .textContainer {
 	width: 96%;
 	margin: 0px auto;
@@ -162,6 +169,7 @@ background: #200724;
 	background: black;
 	padding: 10px 15px;
 }
+
 .longtext .textContainer {
 	background: none;
 }
@@ -185,9 +193,23 @@ background: #200724;
 	padding: 2px 4px;
 	line-height: 1.1;
 }
+.step.longtext.lightbg .textContainer span {
+	background: #ad2376 !important;
+	color: #fff !important;
+}
 .textContainer .citation {
 	opacity: 0.5;
 	font-size: 0.9rem;
 	line-height: 1.1rem;
 	margin-bottom: 10px;
+}
+
+
+
+.reduceMotion-true .scene_containers, .reduceMotion-true .scene, .reduceMotion-true .decade-container, .reduceMotion-true .movie {
+	transition: none !important;
+}
+
+.toggle {
+ margin-top: 20px;
 }

@@ -1,31 +1,53 @@
 <script>
-	export let data, position, sortedColumn, decade;
+	import { onMount } from 'svelte';
+	export let data, position, sortedColumn, decade, viewType;
 
 	const year = data["first_year"];
 	let addClass = "";
 	let tooltip_orientation = "left";
 
-	$: {
+	let isTouchDevice = false;
+	let isCorrectScene = 0;
+
+	  // Check if the device is a touch device
+	const checkIfTouchDevice = () => {
+		isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+	};
+
+	function toggleTooltip() {
 		tooltip_orientation = "left";
-		if (decade > 1990) {
+		if (decade > 1990 || viewType=="zoom1950v2") {
 			tooltip_orientation = "right";
 		}
+		
 	}
 
+	$: {
+		viewType;
+		tooltip_orientation;
+		isCorrectScene = 0;
+		if (viewType == "zoom1950v2" || viewType == "") {
+			isCorrectScene = 1;
+		}
+	}
+	onMount(() => {
+		checkIfTouchDevice();
+	});
 </script>
 
-<div class="movie {addClass}" style="
+<div class="movie {addClass} correctScene-{isCorrectScene}" style="
 left: {position.x};
 top: {position.y};
 width: {position.width};
 height: {position.height};
 background: {position.color};
-transition: right {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
-left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
-top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
-bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
+opacity: {isCorrectScene};
+transition: all {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
+left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
+top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
+bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
 background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
-">
+" on:mouseover|preventDefault={toggleTooltip}>
 <div class='tooltip {tooltip_orientation}'>
 	<div class="film_title">{data["title_year"]}</div>
 	<div class="data_point">{data[sortedColumn]}</div>
@@ -42,8 +64,8 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		-webkit-user-select: none; /* Safari */
 		-ms-user-select: none; /* IE 10 and IE 11 */
 		user-select: none; /* Standard syntax */
+		opacity: 0;
 	}
-
 	.movie.hl {
 		background: black !important;
 	}
@@ -61,13 +83,13 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		pointer-events: none;
 	}
 	.film_title {
-		font-size: 15px;
-		line-height: 18px;
+		font-size: 13px;
+		line-height: 15px;
 		font-weight: bold;
 	}
 	.data_point {
-		font-size: 13px;
-		line-height: 15px;
+		font-size: 12px;
+		line-height: 14px;
 		margin-top: 5px;
 		color: #dedede;
 	}

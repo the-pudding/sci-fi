@@ -1,6 +1,6 @@
 <script>
 	import wordmark from "$svg/wordmark.svg";
-	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio;
+	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio,prefersReducedMotion;
 	let opacity = 0;
 	let stages = [];
 	const scalings = {
@@ -94,8 +94,6 @@
 			transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			overflow: hidden;
 			pointer-events: none;
-/*			background: #200724;*/
-			border-bottom: 1px solid #200724;
 		}
 		.scene .background_color {
 			background: #9D47AA;
@@ -149,6 +147,7 @@
 			background-repeat: repeat-y;
 			image-rendering: pixelated;
 		}
+		
 		.scene_containers {
 			transform-origin: bottom left;
 		}

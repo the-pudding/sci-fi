@@ -1,7 +1,7 @@
 <script>
 	import Movie from '$components/scifi/Scifi.movie.svelte';
 	import Scene from "$components/scifi/Scifi.scene.svelte";
-	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, sceneMaxLookup, progress, sceneRatio;
+	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, sceneMaxLookup, progress, sceneRatio, prefersReducedMotion;
 	let opacity = 0;
 
 	$: {
@@ -17,15 +17,15 @@
 	<h2>{decade}</h2>
 	<div class="movie-container">
 		{#each movies as movie}
-		<Movie data={movie} position={positions[movie.index]} sortedColumn={sortedColumn} {decade}/>
+		<Movie data={movie} position={positions[movie.index]} {viewType} sortedColumn={sortedColumn} {decade}/>
 		{/each}
 	</div>
 	{#if ["1950"].indexOf(decade) != -1}
-		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} nextDecade=""/>
+		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 	{/if}
 	{#if decade == "2020"}
 		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} nextDecade="nextDecade"/>
-		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} nextDecade="nextDecade" />
+		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade="nextDecade" />
 	{/if}
 </div>
 
@@ -59,5 +59,15 @@
 		color: white;
 		opacity: 0.5;
 		font-family: CozetteVector, Courier, monospace;
+	}
+	@media screen and (max-width: 640px) {
+		.decade-container h2 {
+			font-size: 1.3em;
+		}
+	}
+	@media screen and (max-width: 440px) {
+		.decade-container h2 {
+			font-size: 1.1em;
+		}
 	}
 </style>

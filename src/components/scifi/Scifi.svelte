@@ -1,8 +1,10 @@
 <script>
+	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import Scrolly from "$components/helpers/Scrolly.svelte";
 	import Decade from "$components/scifi/Scifi.decade.svelte";
 	import Text from "$components/scifi/Scifi.text.svelte";
+	import Toggle from "$components/helpers/Toggle.svelte";
 	export let copy;
 	import movies from "$data/movies.json";
 	import { groupByDecade, sortByAttributes, getContrastingColors, options } from '$components/helpers/helpers.js';
@@ -14,6 +16,9 @@
 	let value;
 	let titleOn = "title";
 	let chartTitleLoc_y = 50;
+	let prefersReducedMotion = false;
+	let noAnimation = false;
+	let instantAnimation = true;
 
 	const colorLookupEra = {
 		"future": "#fb04d3",
@@ -28,11 +33,13 @@
 		"N/A": "#dedede"
 	};
 	let colors = ["#fb04d3","#dc83b9","#c3a2b3","#dedede"];
-	let loaded = "noAnimation";
+	let loaded = false;
 	let decadesShown;
 	let objectSize = { width: 24, height: 14 };
 	let viewType = "zoom1950";
 	let sceneNum = -1;
+	let prev_viewType;
+	let prev_sceneNum;
 	let progress = 0;
 	let sceneRatio = 0.4;
 	const sceneMaxLookup = {
@@ -104,7 +111,15 @@
 	    if (viewType == "zoom1950" && sceneNum < 3) {
 	    	titleOn = "title";
 	    }
-	    
+	    if (viewType == "zoom2030" && sceneNum > 2) {
+	    	titleOn = "end";
+	    }
+
+	    // Changes so the scene doesn't go too fast
+	    let additionalY = h/(aspectRatio*(10 - sceneNum));
+	    if (sceneNum < 2) {
+	    	additionalY = 0;
+	    }
 	    // reset translate
 	    translate = {x: 0, y: 0, z: 1};
 
@@ -114,7 +129,7 @@
 	    	translate.x = w;
 	    } else if (viewType == "zoom1950") {
 	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) );
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) ) + additionalY;
 	    	translate.x = w;
 	    } else if (viewType == "zoom1950v2") {
 	    	translate.z = divider;
@@ -122,7 +137,7 @@
 	    	translate.x = w / 2 + (((sceneWidth/8) - spacePerDecade) / 2);
 	    } else if (viewType == "zoom2020") {
 	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2020"] * barHeight * (sceneMaxLookup["2020"]/(sceneMaxLookup["2020"]+1))* (translate.z));
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2020"] * barHeight * (sceneMaxLookup["2020"]/(sceneMaxLookup["2020"]+1))* (translate.z)) + additionalY;
 	    	translate.x = w * -translate.z;
 	    } else if (viewType == "zoom2020v2") {
 	    	translate.z = divider;
@@ -131,7 +146,7 @@
 	    	translate.x = w - (sceneWidth/8) - w/4;
 	    } else if (viewType == "zoom2030") {
 	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2030"] * barHeight * (sceneMaxLookup["2030"]/(sceneMaxLookup["2030"]+1))* (translate.z));
+	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2030"] * barHeight * (sceneMaxLookup["2030"]/(sceneMaxLookup["2030"]+1))* (translate.z)) + additionalY;
 	    	translate.x = w * -translate.z;
 	    } else if (viewType == "zoom2030v2") {
 	    	translate.z = divider;
@@ -175,18 +190,15 @@
             xPos += objectSize.width;
         });
 	    });
-
+	    
 	    return positions;
 	}
 
-
-	function triggerChange() {
-		loaded = "noAnimation"
-		setTimeout(function() {
-			loaded = ""
-		},2000)
+	function dispatchResize() {
+		instantAnimation = true;
 		positions = calculatePositions();
 	}
+
 
 	$: {
 		w = w;
@@ -198,21 +210,45 @@
 		sortedColumn = copy.timeline[value]["variable"];
 		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
 		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
-		positions = calculatePositions();
-		barHeight;
-		if (value > 0) {
-			loaded = ""
+
+		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded) {
+			positions = calculatePositions();
+			prev_viewType = viewType;
+			prev_sceneNum = sceneNum;	
+			loaded = true;
+			
+		} 
+		if (progress != 0) {
+			instantAnimation = false;
 		}
-		
+
+		barHeight;
 	}
+
+	onMount(() => {
+		positions = calculatePositions();
+		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+		function updatePreference(e) {
+			prefersReducedMotion = e.matches;
+		}
+
+        // Add listener
+		mediaQuery.addListener(updatePreference);
+
+        // Set initial value
+		prefersReducedMotion = mediaQuery.matches;
+        // Cleanup function
+		return () => {
+			mediaQuery.removeListener(updatePreference);
+		};
+	});
 </script>
-
-<svelte:window on:resize={triggerChange} />
-
+<svelte:window on:resize={dispatchResize}></svelte:window>
 <div class="outsideContainer">
 	<section id="scrolly">
 
-		<div class="visualContainer {titleOn}" bind:clientWidth={w} bind:clientHeight={h}>
+		<div class="visualContainer {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
 			{#if viewType == "" || viewType.indexOf("v2") != -1}
 			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;" in:slide>
 				<div class="legend_title" in:slide>{copy.timeline[value].hed}</div>
@@ -223,15 +259,16 @@
 				</div>
 			</div>
 			{/if}
-			<div class="zoomContainer {loaded} {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
+			<div class="zoomContainer {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
 				{#each Object.keys(decades) as decade}
-				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio}/>
+				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
 				{/each}
 			</div>
 			{#if sceneNum == -1}
 			<div class="title_container" transition:fade>
 				<h1>{copy.Hed}</h1>
 				<div class="byline">by <a href="https://pudding.cool/author/alvin-chang/">Alvin Chang</a></div>
+				<Toggle label="Animation" bind:value={noAnimation} options={ [{value: false, text: "On"}, {value: true, text: "Off"}] }/>
 			</div>
 			{/if}
 		</div>
@@ -265,16 +302,22 @@
 		transition: background 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
+	.visualContainer.reduceMotion-true, .visualContainer.reduceMotion-true * {
+		transition: none !important;
+	}
 	.visualContainer.title {
 		background: #e9abff;
 		font-family: CozetteVector, Courier, monospace;
+	}
+	.visualContainer.end {
+		background: #a35c9e;
 	}
 	.title_container {
 		position: absolute;
 		left: 0%;
 		width: 100%;
 		text-align: center;
-		top: 24vh;
+		bottom: 65vh;
 		color: #200724;
 		font-weight: bold;
 		font-family: CozetteVector, Courier, monospace;
@@ -321,27 +364,26 @@
 		padding: 0 4px;
 		min-width: 40px;
 		text-shadow: 0px 0px 4px #000;
-/*		font-family: var(--sans);*/
-font-size: 1.2em;
-font-family: CozetteVector, Courier, monospace;
-}
-.zoomContainer {
-	width: 100%;
-	height: 100vh;
-	transition: transform 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-	transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
-	transform: perspective(0) translate3d(0, 0, 0) scale(1);
-	transform-origin: top left;
-}
+		font-size: 1.2em;
+		font-family: CozetteVector, Courier, monospace;
+	}
+	.zoomContainer {
+		width: 100%;
+		height: 100vh;
+		transition: transform 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transform: perspective(0) translate3d(0, 0, 0) scale(1);
+		transform-origin: top left;
+	}
 
-.zoomContainer.noAnimation {
-	transition: transform 0ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-}
+	.reduceMotion-true .zoomContainer {
+		transition: none !important;
+	}
 
-#sortedColumn {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-}
+	#sortedColumn {
+		position: absolute;
+		left: 10px;
+		top: 10px;
+	}
 
 </style>
