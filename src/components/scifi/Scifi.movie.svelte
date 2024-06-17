@@ -7,7 +7,7 @@
 	let tooltip_orientation = "left";
 
 	let isTouchDevice = false;
-	let isCorrectScene = 0;
+	let shown = "";
 
 	  // Check if the device is a touch device
 	const checkIfTouchDevice = () => {
@@ -15,40 +15,36 @@
 	};
 
 	function toggleTooltip() {
+		shown = true;
 		tooltip_orientation = "left";
 		if (decade > 1990 || viewType=="zoom1950v2") {
 			tooltip_orientation = "right";
 		}
-		
 	}
 
 	$: {
 		viewType;
 		tooltip_orientation;
-		isCorrectScene = 0;
-		if (viewType == "zoom1950v2" || viewType == "") {
-			isCorrectScene = 1;
-		}
+		shown = false;
 	}
 	onMount(() => {
 		checkIfTouchDevice();
 	});
 </script>
 
-<div class="movie {addClass} correctScene-{isCorrectScene}" style="
+<div class="movie {addClass}" style="
 left: {position.x};
 top: {position.y};
 width: {position.width};
 height: {position.height};
 background: {position.color};
-opacity: {isCorrectScene};
-transition: all {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
-left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
-top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
+transition: right {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
+left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000),
+top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
 bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
 background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 " on:mouseover|preventDefault={toggleTooltip}>
-<div class='tooltip {tooltip_orientation}'>
+<div class='tooltip {tooltip_orientation} {shown}'>
 	<div class="film_title">{data["title_year"]}</div>
 	<div class="data_point">{data[sortedColumn]}</div>
 </div>
@@ -64,7 +60,6 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		-webkit-user-select: none; /* Safari */
 		-ms-user-select: none; /* IE 10 and IE 11 */
 		user-select: none; /* Standard syntax */
-		opacity: 0;
 	}
 	.movie.hl {
 		background: black !important;
@@ -98,7 +93,7 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		right: 0;
 	}
 	.movie:hover {
-		z-index: 99;
+		z-index: 999999;
 		border: 1px solid #fff;
 	}
 	.movie:hover .tooltip {

@@ -5,7 +5,7 @@
 	let opacity = 0;
 
 	$: {
-		if (decadesShown.indexOf(String(decade)) != -1) {
+		if (decadesShown.indexOf(String(decade)) != -1 && (viewType == "zoom1950v2" || viewType == "")) {
 			opacity = 1;
 		} else {
 			opacity = 0;
