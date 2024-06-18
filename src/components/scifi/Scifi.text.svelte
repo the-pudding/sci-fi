@@ -14,7 +14,8 @@
             }
 
             if (line.indexOf("IMAGE|") != -1) {
-                line = '<div class="imageContainer"><img class="desktopImage" src="assets/leftovers/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '.svg"/><img class="mobileImage" src="assets/leftovers/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '_mobile.svg"/></div>';
+                // line = '<div class="imageContainer"><img class="desktopImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '.png"/><img class="mobileImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '_mobile.png"/></div>';
+                 line = '<div class="imageContainer"><img class="desktopImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '.png"/>';
             }
 
             if (line.indexOf(">>") != -1) {
@@ -57,7 +58,9 @@ function wrapInPTags(arr) {
 
 
 <style>
-	
+	.imageContainer {
+        image-rendering: pixelated;
+    }
 </style>
 
 

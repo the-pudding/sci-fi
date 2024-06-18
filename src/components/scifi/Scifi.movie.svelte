@@ -1,19 +1,13 @@
 <script>
-	import { onMount } from 'svelte';
 	export let data, position, sortedColumn, decade, viewType;
 
 	const year = data["first_year"];
 	let addClass = "";
-	let tooltip_orientation = "left";
+	let tooltip_orientation = "";
 
-	let isTouchDevice = false;
 	let shown = "";
 
-	  // Check if the device is a touch device
-	const checkIfTouchDevice = () => {
-		isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-	};
-
+	let currentPos = position.x+position.y+position.speed;
 	function toggleTooltip() {
 		shown = true;
 		tooltip_orientation = "left";
@@ -21,18 +15,21 @@
 			tooltip_orientation = "right";
 		}
 	}
-
-	$: {
-		viewType;
-		tooltip_orientation;
+	function hideTooltip() {
 		shown = false;
 	}
-	onMount(() => {
-		checkIfTouchDevice();
-	});
+
+	$: {
+		viewType, tooltip_orientation, shown;
+		if (position.x+position.y+position.speed != currentPos) {
+			currentPos = position.x+position.y+position.speed
+			hideTooltip();
+		}
+	}
+
 </script>
 
-<div class="movie {addClass}" style="
+<div class="movie {addClass} hover-{shown}" style="
 left: {position.x};
 top: {position.y};
 width: {position.width};
@@ -43,7 +40,7 @@ left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000),
 top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
 bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
 background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
-" on:mouseover|preventDefault={toggleTooltip}>
+" on:mouseenter|preventDefault={toggleTooltip} on:mouseleave|preventDefault={hideTooltip}>
 <div class='tooltip {tooltip_orientation} {shown}'>
 	<div class="film_title">{data["title_year"]}</div>
 	<div class="data_point">{data[sortedColumn]}</div>
@@ -77,6 +74,9 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		font-size: 13px;
 		pointer-events: none;
 	}
+	.hover-true .tooltip {
+		display: block;
+	}
 	.film_title {
 		font-size: 13px;
 		line-height: 15px;
@@ -92,11 +92,8 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		left: auto;
 		right: 0;
 	}
-	.movie:hover {
+	.movie.hover-true {
 		z-index: 999999;
 		border: 1px solid #fff;
-	}
-	.movie:hover .tooltip {
-		display: block;
 	}
 </style>

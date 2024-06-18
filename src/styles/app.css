@@ -105,7 +105,7 @@ background: #200724;
 	pointer-events: none;
 	height: auto;
 	min-height: 10vh;
-	padding: 90vh 0 50vh;
+	padding: 100vh 0 10vh;
 	position: relative;
 	color: white;
 	box-sizing: content-box;
@@ -117,7 +117,7 @@ background: #200724;
 }
 @media screen and (max-width: 600px) {
 	.step {
-		padding: 70vh 0 150vh;
+		padding: 100vh 0 10vh;
 	}
 }
 .step.longtext {
@@ -190,7 +190,7 @@ background: #200724;
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
 	display: inline;
-	padding: 2px 4px;
+	padding: 0px 2px;
 	line-height: 1.1;
 }
 .step.longtext.lightbg .textContainer span {

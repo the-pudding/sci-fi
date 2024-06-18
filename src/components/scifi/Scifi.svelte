@@ -19,6 +19,7 @@
 	let prefersReducedMotion = false;
 	let noAnimation = false;
 	let instantAnimation = true;
+	let zoomSpeed = 3400;
 
 	const colorLookupEra = {
 		"future": "#fb04d3",
@@ -201,14 +202,11 @@
 
 
 	$: {
-		w = w;
-		h = h;
-		progress;
-		titleOn;
+		w, h, progress, titleOn, barHeight;
 		value = value === undefined ? 0 : value;
 		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
 		sortedColumn = copy.timeline[value]["variable"];
-		viewType = copy.timeline[value]["view"] === undefined ? "" : copy.timeline[value]["view"];
+		viewType = copy.timeline[value]["view"] === undefined ? "all" : copy.timeline[value]["view"];
 		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
 
 		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
@@ -216,13 +214,16 @@
 			prev_viewType = viewType;
 			prev_sceneNum = sceneNum;	
 			loaded = true;
-			
+			positions = calculatePositions();
 		} 
 		if (progress != 0) {
 			instantAnimation = false;
 		}
-
-		barHeight;
+		if (copy.timeline[value].zoomSpeed) {
+			zoomSpeed = copy.timeline[value].zoomSpeed;
+		} else {
+			zoomSpeed = 3400;
+		}
 	}
 
 	onMount(() => {
@@ -249,8 +250,8 @@
 	<section id="scrolly">
 
 		<div class="visualContainer {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
-			{#if viewType == "" || viewType.indexOf("v2") != -1}
-			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;" in:slide>
+			{#if viewType == "all" || viewType.indexOf("v2") != -1}
+			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
 				<div class="legend_title" in:slide>{copy.timeline[value].hed}</div>
 				<div class="legend_container" in:slide>
 					{#each copy.timeline[value].categories as category, i}
@@ -259,10 +260,14 @@
 				</div>
 			</div>
 			{/if}
-			<div class="zoomContainer {viewType}" style="transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});">
+			<div class="zoomContainer {viewType}" style="
+				transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});
+				transition: transform {zoomSpeed}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+			">
 				{#each Object.keys(decades) as decade}
 				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
 				{/each}
+				<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
 			</div>
 			{#if sceneNum == -1}
 			<div class="title_container" transition:fade>
@@ -299,7 +304,7 @@
 		width: 100%;
 		padding: 0 0px;
 		height: 100vh;
-		transition: background 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: background 500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.visualContainer.reduceMotion-true, .visualContainer.reduceMotion-true * {
@@ -370,7 +375,6 @@
 	.zoomContainer {
 		width: 100%;
 		height: 100vh;
-		transition: transform 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transform: perspective(0) translate3d(0, 0, 0) scale(1);
 		transform-origin: top left;

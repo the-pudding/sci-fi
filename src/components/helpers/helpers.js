@@ -16,6 +16,13 @@ export function groupByDecade(arr) {
     return sortedGrouped;
 }
 
+const sortOrder = {
+    "future": 4,
+    "present": 3,
+    "past": 2,
+    "multiple/other": 1
+};
+
 export function sortByAttributes(array, primaryAttribute, secondaryAttribute) {
     return array.sort((a, b) => {
         const aPrimary = String(a[primaryAttribute]);
@@ -32,12 +39,25 @@ export function sortByAttributes(array, primaryAttribute, secondaryAttribute) {
         if (!aIsNA && bIsNA) {
             return 1; // b should come before a
         }
-        if (aPrimary < bPrimary) {
-            return -1;
+
+        if (primaryAttribute === 'APP_Era') {
+            const aOrder = sortOrder[aPrimary] || 5; // Default to 5 if not found
+            const bOrder = sortOrder[bPrimary] || 5;
+            if (aOrder < bOrder) {
+                return -1;
+            }
+            if (aOrder > bOrder) {
+                return 1;
+            }
+        } else {
+            if (aPrimary < bPrimary) {
+                return -1;
+            }
+            if (aPrimary > bPrimary) {
+                return 1;
+            }
         }
-        if (aPrimary > bPrimary) {
-            return 1;
-        }
+
         if (aSecondary < bSecondary) {
             return -1;
         }
