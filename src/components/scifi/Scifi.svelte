@@ -3,6 +3,7 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import Scrolly from "$components/helpers/Scrolly.svelte";
 	import Decade from "$components/scifi/Scifi.decade.svelte";
+	import Scene from "$components/scifi/Scifi.scene.svelte";
 	import Text from "$components/scifi/Scifi.text.svelte";
 	import Toggle from "$components/helpers/Toggle.svelte";
 	export let copy;
