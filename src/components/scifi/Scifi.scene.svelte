@@ -1,23 +1,23 @@
 <script>
 	import { fade } from 'svelte/transition';
-	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, prefersReducedMotion;
+	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, prefersReducedMotion, w, h;
 	let opacity = 0;
 	let stages = [];
 	const scalings = {
-		"background": 0,
-		"midground": 0.3 / 2,
-		"foreground": 0.7 / 2,
-		"frontground": 0.54 / 2
+		"background": .6,
+		"midground": .8,
+		"foreground": 1,
+		"frontground": 1.1
 	};
 	const sceneHeight = {
 		"background": 99,
 		"midground": 108,
-		"foreground": 126,
-		"frontground": 130
+		"foreground": 132,
+		"frontground": 80
 	};
 
-	let sceneAdjust = 0;
 	$: {
+		w, h;
 		if (viewType == "zoom2030" && decade == "2020") {
 			opacity = 0
 		} else if (viewType == "zoom2020" && decade == "2030") {
@@ -28,42 +28,52 @@
 			opacity = 0;
 		}
 		stages = Array.from({ length: sceneMax + 1 }, (_, i) => i);
-
-		sceneAdjust = 0;
-		if (viewType.indexOf("v2") != -1) {
-			sceneAdjust = 4;
+		if (sceneNum == -1) {
+			sceneNum = -0.9;
 		}
 	}
 </script>
 
-{#if (decade=="2020" && viewType=="zoom2020") || (decade=="2030" && viewType=="zoom2030") || (decade=="1950" && viewType=="zoom1950") || (decade=="1950" && viewType=="zoom1950v2")}
-<div class="scene scene-{decade} {nextDecade} scene{opacity}" style="height: {barHeight}px; width: {barHeight*sceneRatio}px; bottom: {bottomPadding}px; opacity: {opacity};" transition:fade>
+{#if (decade=="2020" && viewType=="zoom2020") || (decade=="2030" && viewType=="zoom2030") || (decade=="1950" && viewType=="zoom1950")}
+<div class="scene scene-{decade} {nextDecade} scene{opacity}" style="width: {w}px; height: {w*2.8}px; bottom: {bottomPadding}px; opacity: {opacity};" transition:fade>
+	<div class="background_color" style="margin-top:{-(sceneNum+1) / sceneMax * 100}%"></div>
+	<div class="foreground_color" style="margin-top:{-(sceneNum+1) / sceneMax * 100}%"></div>
 	
-	<div class="foreground_color"></div>
-	<div class="background_color"></div>
 
 	{#each ["left", "right"] as side}
-		{#each Object.entries(scalings) as [key, scale]}
-			{#if key =="background" && side == "right"}
-			{:else}
-				<div class="{key}_container scene_containers {side}" 
-					style="transform: perspective(0) translate3d(0, 0, 0); top: {-(sceneNum + sceneAdjust) / sceneMax * 100 * scale}%; height: {sceneHeight[key]}%;
-					background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
-				</div>
-			{/if}
-		{/each}
+	{#each Object.entries(scalings) as [key, scale]}
+	{#if key =="background" && side == "right"}
+	{:else}
+	{#if decade=="2030" && key=="background"}
+	<div class="{key}_container scene_containers" 
+	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * 0.5}%; height: {sceneHeight[key]* (30-sceneNum)/34}%;
+	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
+	</div>
+	{:else}
+	<div class="{key}_container scene_containers {side}" 
+	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * scale}%; height: {sceneHeight[key]}%;
+	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
+	</div>
+	{/if}
+	{/if}
 	{/each}
+	{/each}
+	{#if decade=="2030"}
+	<div class="end_container scene_containers" 
+	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * 1}%;
+	background-image: url('assets/scifi/2030-end.png');">
+	</div>
+	{/if}
 
-	<div class="shadow"></div>
+<div class="shadow"></div>
 </div>
 {/if}
 
 <style>
 	.scene {
 		position: absolute;
-		bottom: 60px;
-		right: 100%;
-		height: calc(100% - 60px);
+		top: 0px;
+		left: 0%;
 		width: 100%;
 		transition: opacity 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
@@ -74,29 +84,20 @@
 		background: #9D47AA;
 		position: absolute;
 		top: 0px;
-		height: 50%;
+		height: 30%;
 		width: 100%;
+		transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
-	.scene-1950 .background_color {
-		background: #e9abff;
-	}
-	.scene-2030 .background_color {
-		background: #f6ccff;
-	}
-
+	
 	.scene .foreground_color {
 		background: #a35c9e;
 		position: absolute;
 		bottom: 0px;
-		height: 20%;
+		height: 65%;
 		width: 100%;
-	}
-	.scene-1950 .foreground_color, .scene-2020 .foreground_color  {
-		background: #200724;
-		height: 43vh;
-	}
-	.scene-2030 .foreground_color {
-		border-bottom: 2px solid #200724;
+		transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.scene1 {
 		pointer-events: auto;
@@ -109,7 +110,7 @@
 		display: block;
 		position: absolute;
 		left: 0px;
-		bottom: 1px;
+		bottom: 0px;
 		width: 100%;
 		height: 100%;
 		transform-origin: bottom left;
@@ -149,9 +150,7 @@
 		z-index: 10000;
 		transform: translate3d(0,0,10px);
 	}
-	.scene-2030 .shadow {
-		background: linear-gradient(to bottom, rgba(28, 5, 38, 0) 0%, #a35c9e 50%);
-	}
+	
 	.num {
 		position: absolute;
 		left: 0;
@@ -164,35 +163,12 @@
 
 	/* Specific styles for different containers */
 	.frontground_container {
-		width: 35%;
+		width: 40%;
 		left: 0%;
 		z-index: 100;
 	}
-	.scene-2020 .frontground_container.left {
-		width: 43%;
-	}
-	.scene-2020 .frontground_container.right {
-		width: 50%;
-		right: -17%;
-	}
-	.scene-1950 .frontground_container.left {
-		width: 55%;
-		left: 15%;
-		margin-top: -8%;
-	} 
-	.scene-1950 .frontground_container.right {
-		width: 44%;
-		right: 10%;
-	} 
-	.scene-2030 .frontground_container.left {
-		width: 44%;
-		left: -12%;
-		margin-top: -18%;
-		height: 140% !important;
-	} 
-	.scene-2030 .frontground_container.right {
-		right: 33%;
-	}
+	
+	
 
 	.foreground_container {
 		width: 16%;
@@ -202,40 +178,18 @@
 	.num.foreground {
 		width: 100%;
 	}
-	.scene-2030 .right.foreground_container {
-		height: 140% !important;
-	}
-	.scene-2030 .left.foreground_container {
-		height: 108% !important;
-		width: 35%;
-		left: -5%;
-	}
+
 
 	.midground_container {
 		width: 35%;
 		left: 0%;
 		z-index: 80;
 	}
-	.scene-1950 .right.midground_container {
-		right: 10%;
-	}
-	.scene-1950 .left.midground_container {
-		left: 10%;
-	}
+
 	.num.midground {
 		width: 100%;
 	}
-	.scene-2030 .right.midground_container {
-		right: 12%;
-		width: 48%;
-		height: 110% !important;
-	}
-	.scene-2030 .left.midground_container {
-		left: 2%;
-		width: 50%;
-		height: 110% !important;
-	}
-
+	
 	.background_container {
 		width: 66%;
 		left: 17%;
@@ -243,14 +197,118 @@
 		text-align: center;
 		z-index: 70;
 	}
+	
+	
+	.num.background {
+		width: 100%;
+	}
+
+	/*---------------- 
+	1950
+	-----------------*/
+	.scene-1950 .background_color {
+		background: #e9abff;
+	}
+	.scene-1950 .foreground_color, .scene-2020 .foreground_color  {
+		background: #200724;
+	}
 	.scene-1950 .background_container {
 		left: 22%;
+	}
+	.scene-1950 .frontground_container.left {
+		left: 20%;
+		width: 40%;
+		margin-top: 200%;
+	} 
+	.scene-1950 .frontground_container.right {
+		right: 10%;
+		width: 50%;
+		margin-top: 220%;
+	} 
+	.scene-1950 .right.midground_container {
+		right: 10%;
+	}
+	.scene-1950 .left.midground_container {
+		left: 10%;
+	}
+
+	/*---------------- 
+	2020
+	-----------------*/
+	.scene-2020 .background_container {
+		height: 90% !important;
+	}
+	.scene-2020 .midground_container {
+		height: 112% !important;
+	}
+	.scene-2020 .foreground_container {
+		height: 138% !important;
+	}
+	.scene-2020 .frontground_container.left {
+		width: 43%;
+		margin-top: 260%;
+		height: 70% !important;
+	}
+	.scene-2020 .frontground_container.right {
+		width: 40%;
+		right: 0%;
+		margin-top: 280%;
+		height: 60% !important;
+	}
+
+	/*----------------
+	2030 
+	-----------------*/
+	.scene-2030 .foreground_color {
+		border-bottom: 2px solid #200724;
+	}
+	.scene-2030 .background_color {
+		background: #f6ccff;
+	}
+	.scene-2030 .shadow {
+		background: linear-gradient(to bottom, rgba(28, 5, 38, 0) 0%, #a35c9e 50%);
+	}
+
+	.scene-2030 .frontground_container.right {
+		left: 30%;
+		width: 40%;
+		height: 60% !important;
+		margin-top: 285%;
+	}
+	.scene-2030 .end_container {
+		position: absolute;
+		left: 30%;
+		height: 60% !important;
+		margin-top: 255%;
+		width: 40%;
+		z-index: 100;
+
+	}
+	.scene-2030 .right.foreground_container {
+		height: 125% !important;
+		width: 17%;
+		margin-top: 40%;
+	}
+	.scene-2030 .left.foreground_container {
+		width: 47%;
+		left: -14%;
+		margin-top: 50%;
+		height: 120% !important;
+	}
+	.scene-2030 .right.midground_container {
+		right: 10%;
+		width: 18%;
+		height: 108% !important;
+	}
+	.scene-2030 .left.midground_container {
+		left: 2%;
+		width: 50%;
+		height: 110% !important;
 	}
 	.scene-2030 .background_container {
 		left: 0%;
 		width: 100%;
-	}
-	.num.background {
-		width: 100%;
+		transition: height 3500ms cubic-bezier(0.455, 0.030, 0.515, 0.955), top 3500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 </style>

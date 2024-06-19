@@ -93,14 +93,23 @@
 	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
 	    let elementsPerRow = 10;
 	    let divider = 1.2;
-	    if (aspectRatio < 0.9) {
+
+	    if (aspectRatio < 0.9 && viewType == "all") {
 	    	elementsPerRow = 5;
 	    	divider = 1;
 	    } else if (aspectRatio < 1.4) {
 	    	elementsPerRow = 8;
 	    	divider = 1.2;
 	    }
-	    const elementsPerCol = 190 / elementsPerRow;
+
+	    if (viewType == "zoom1950v2") {
+	    	elementsPerRow = 10;
+	    	if (aspectRatio > 2.1) {
+	    		elementsPerRow = 20;
+	    	}
+	    }
+
+	    const elementsPerCol = 200 / elementsPerRow;
 	    barHeight = (elementsPerCol * objectSize.height);
 	    if (elementsPerRow == 5) {
 	    	barHeight = barHeight*.95
@@ -109,53 +118,26 @@
 	    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
 	    const sceneWidth = barHeight * sceneRatio * 8
 	    let multiplier = w / sceneWidth;
+	    
 	    titleOn = "";
-	    if (viewType == "zoom1950" && sceneNum < 3) {
+	    if (viewType == "zoom1950" && sceneNum < 2) {
 	    	titleOn = "title";
 	    }
 	    if (viewType == "zoom2030" && sceneNum > 2) {
 	    	titleOn = "end";
 	    }
-
-	    // Changes so the scene doesn't go too fast
-	    let additionalY = h/(aspectRatio*(10 - sceneNum));
-	    if (sceneNum < 2) {
-	    	additionalY = 0;
-	    }
 	    // reset translate
 	    translate = {x: 0, y: 0, z: 1};
 
-	    if (viewType == "zoom1950" && sceneNum == -1) {
-	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = (-(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (0 / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) ) ) + h/(aspectRatio*8);
-	    	translate.x = w;
-	    } else if (viewType == "zoom1950") {
-	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["1950"] * barHeight * (sceneMaxLookup["1950"]/(sceneMaxLookup["1950"]+1))* (translate.z) ) + additionalY;
-	    	translate.x = w;
-	    } else if (viewType == "zoom1950v2") {
+	    if (viewType.indexOf("v2") != -1) {
 	    	translate.z = divider;
 	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
-	    	translate.x = w / 2 + (((sceneWidth/8) - spacePerDecade) / 2);
-	    } else if (viewType == "zoom2020") {
-	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2020"] * barHeight * (sceneMaxLookup["2020"]/(sceneMaxLookup["2020"]+1))* (translate.z)) + additionalY;
-	    	translate.x = w * -translate.z;
-	    } else if (viewType == "zoom2020v2") {
-	    	translate.z = divider;
-	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
-	    	translate.x = -w / divider;
-	    	translate.x = w - (sceneWidth/8) - w/4;
-	    } else if (viewType == "zoom2030") {
-	    	translate.z = 8 * multiplier*1.01;
-	    	translate.y = -(h * translate.z) + (barHeight * translate.z) + (bottomPadding * translate.z) - (sceneNum / sceneMaxLookup["2030"] * barHeight * (sceneMaxLookup["2030"]/(sceneMaxLookup["2030"]+1))* (translate.z)) + additionalY;
-	    	translate.x = w * -translate.z;
-	    } else if (viewType == "zoom2030v2") {
-	    	translate.z = divider;
-	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
-	    	translate.x = -w / divider;
+	    	translate.x = w / 2 - spacePerDecade/1.6;
 	    }
-	    chartTitleLoc_y = barHeight / h * 100 + 22*translate.z;
+	    chartTitleLoc_y = barHeight / h * 100 + 26*translate.z;
+	    if (chartTitleLoc_y > 85) {
+	    	chartTitleLoc_y = 85;
+	    }
 	    // Iterate through each decade to calculate positions
 	    uniqueDecades.forEach((decade, decadeIndex) => {
 	    	const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
@@ -262,37 +244,45 @@
 			</div>
 			{/if}
 			<div class="zoomContainer {viewType}" style="
-				transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});
-				transition: transform {zoomSpeed}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+			transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});
+			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			">
-				{#each Object.keys(decades) as decade}
-				<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
-				{/each}
-				<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
-			</div>
-			{#if sceneNum == -1}
-			<div class="title_container" transition:fade>
-				<h1>{copy.Hed}</h1>
-				<div class="byline">by <a href="https://pudding.cool/author/alvin-chang/">Alvin Chang</a></div>
-				<Toggle label="Animation" bind:value={noAnimation} options={ [{value: false, text: "On"}, {value: true, text: "Off"}] }/>
-			</div>
-			{/if}
+			{#each Object.keys(decades) as decade}
+			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
+			{/each}
+			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
+		</div>
+		<div class="scene_wrapper">
+			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["1950"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2020"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 		</div>
 
-		<Scrolly bind:value top={0} bind:progress={progress}>
-			{#each copy.timeline as step_obj, i}
-			{@const active = value === i}
-			{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
-			
-			<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
-				{#if step_obj.text != ""}	
-				<Text sortedColumn={sortedColumn} copy={step_obj.text}  type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
-				{/if}
-			</div>
-			{/each}
-		</Scrolly>
+		{#if sceneNum == -1}
+		<div class="title_container" transition:fade>
+			<h1>{copy.Hed}</h1>
+			<div class="byline">by <a href="https://pudding.cool/author/alvin-chang/">Alvin Chang</a></div>
+			<Toggle label="Animation" bind:value={noAnimation} options={ [{value: false, text: "On"}, {value: true, text: "Off"}] }/>
+		</div>
+		{/if}
 
-	</section>
+	</div>
+
+
+	<Scrolly bind:value top={0} bind:progress={progress}>
+		{#each copy.timeline as step_obj, i}
+		{@const active = value === i}
+		{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
+
+		<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
+			{#if step_obj.text != ""}	
+			<Text sortedColumn={sortedColumn} copy={step_obj.text}  type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
+			{/if}
+		</div>
+		{/each}
+	</Scrolly>
+
+</section>
 </div>
 
 <style>
@@ -305,7 +295,7 @@
 		width: 100%;
 		padding: 0 0px;
 		height: 100vh;
-		transition: background 500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: background 4000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.visualContainer.reduceMotion-true, .visualContainer.reduceMotion-true * {
@@ -380,7 +370,13 @@
 		transform: perspective(0) translate3d(0, 0, 0) scale(1);
 		transform-origin: top left;
 	}
-
+	.scene_wrapper {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100vh;
+	}
 	.reduceMotion-true .zoomContainer {
 		transition: none !important;
 	}

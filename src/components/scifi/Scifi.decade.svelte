@@ -42,14 +42,14 @@
 <div class="decade-container">
 	<h2 style="opacity: {opacity*.5};">{decade}</h2>
 	{#if sortedColumn != "top200"}
-		<h3 style="opacity: {opacity}; bottom: {barHeight + 80}px;" transition:slide>{roundedDatapoint}%</h3>
+		<h3 style="opacity: {opacity}; bottom: {barHeight + 60}px;" transition:slide>{roundedDatapoint}%</h3>
 	{/if}
 	<div class="movie-container" style="opacity: {opacity};">
 		{#each movies as movie}
 		<Movie data={movie} position={positions[movie.index]} {viewType} sortedColumn={sortedColumn} {decade}/>
 		{/each}
 	</div>
-	{#if ["1950"].indexOf(decade) != -1}
+	<!-- {#if ["1950"].indexOf(decade) != -1}
 		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 	{/if}
 	{#if decade == "2020"}
@@ -59,7 +59,7 @@
 		{#if viewType != "zoom2020"}
 		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade="nextDecade" />
 		{/if}
-	{/if}
+	{/if} -->
 </div>
 
 <style>

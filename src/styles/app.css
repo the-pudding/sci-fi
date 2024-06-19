@@ -182,6 +182,7 @@ background: #200724;
 
 .textContainer p {
 	margin-bottom: 1rem;
+	color: #F1DFEF;
 }
 .textContainer p span {
 	display: inline;
@@ -192,6 +193,10 @@ background: #200724;
 	display: inline;
 	padding: 0px 2px;
 	line-height: 1.1;
+}
+.textContainer p a {
+	color: white;
+	text-decoration: underline;
 }
 .step.longtext.lightbg .textContainer span {
 	background: #ad2376 !important;
