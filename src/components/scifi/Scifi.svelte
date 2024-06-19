@@ -49,6 +49,7 @@
 		"2020": 4,
 		"2030": 4
 	}
+	let sceneMax = 4;
 	let translate = {x: w, y: 0, z: 8};
 
 
@@ -65,16 +66,24 @@
 
    		// Calculate effective container dimensions
 		const effectiveContainerWidth = w;
-
 		const effectiveContainerHeight = h;
-
+		// Calculate the number of elements per row based on screen aspect ratio
+	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
+	    if (aspectRatio < 1) {
+	    	sceneMax = sceneMax + (1 - aspectRatio)*.2;
+	    }
     	// Calculate object sizes to ensure 200 elements per decade fit
 		const elementsPerDecade = 200;
 		const spacePerDecade = effectiveContainerWidth / decadeCount;
 		const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
 		objectSize.width = objectWidth;
-		objectSize.height = objectWidth * 1.5;
+		objectSize.height = objectWidth * 1.4;
 
+
+		if (viewType == "zoom1950v2" && aspectRatio < 1.2) {
+			objectSize.width = objectWidth * (2.4-aspectRatio);
+			objectSize.height = objectWidth * (3.4-aspectRatio);
+		}
 
     	// Assign unique colors to each unique value of the sorted column
 		const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
@@ -88,18 +97,14 @@
 
 		const positions = {};
 
-	    // Calculate the number of elements per row based on screen aspect ratio
-	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
+	    
 	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
 	    let elementsPerRow = 10;
-	    let divider = 1.2;
 
 	    if (aspectRatio < 0.9 && viewType == "all") {
 	    	elementsPerRow = 5;
-	    	divider = 1;
 	    } else if (aspectRatio < 1.4) {
 	    	elementsPerRow = 8;
-	    	divider = 1.2;
 	    }
 
 	    if (viewType == "zoom1950v2") {
@@ -130,8 +135,10 @@
 	    translate = {x: 0, y: 0, z: 1};
 
 	    if (viewType.indexOf("v2") != -1) {
-	    	translate.z = divider;
-	    	translate.y = -(barHeight*translate.z) + barHeight / divider;
+	    	translate.y = -(barHeight*translate.z) + barHeight;
+	    	// if (aspectRatio < 0.9) {
+	    	// 	translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
+	    	// }
 	    	translate.x = w / 2 - spacePerDecade/1.6;
 	    }
 	    chartTitleLoc_y = barHeight / h * 100 + 26*translate.z;
@@ -253,9 +260,9 @@
 			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
 		</div>
 		<div class="scene_wrapper">
-			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["1950"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
-			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2020"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
-			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 		</div>
 
 		{#if sceneNum == -1}
@@ -331,6 +338,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		width: 100%;
+		padding: 0 10px;
 		text-align: center;
 		bottom: var(--chartTitleLocY, 0); /* Using CSS variable for dynamic positioning */
 	}
