@@ -139,7 +139,7 @@
 	    	// if (aspectRatio < 0.9) {
 	    	// 	translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
 	    	// }
-	    	translate.x = w / 2 - spacePerDecade/1.6;
+	    	translate.x = w / 2 - spacePerDecade/2;
 	    }
 	    chartTitleLoc_y = barHeight / h * 100 + 26*translate.z;
 	    if (chartTitleLoc_y > 85) {
@@ -265,7 +265,7 @@
 			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 		</div>
 
-		{#if sceneNum == -1}
+		{#if sceneNum == -1 && viewType == "zoom1950"}
 		<div class="title_container" transition:fade>
 			<h1>{copy.Hed}</h1>
 			<div class="byline">by <a href="https://pudding.cool/author/alvin-chang/">Alvin Chang</a></div>
@@ -324,6 +324,7 @@
 		color: #200724;
 		font-weight: bold;
 		font-family: CozetteVector, Courier, monospace;
+		z-index: 99999;
 	}
 	.title_container.title_container h1 {
 		font-size: 2em;
@@ -379,6 +380,7 @@
 		transform-origin: top left;
 	}
 	.scene_wrapper {
+		pointer-events: none;
 		position: absolute;
 		left: 0px;
 		top: 0px;

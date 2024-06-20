@@ -4,8 +4,8 @@ export default [
 		"filepath": "src/data/copy.json"
 	},
 	{
-		"id": "1Tba2J_hBsN4HAxjpzKs9-3c-715I_JhcTEpDuFYF4ko",
-		"gid": "1639907209",
+		"id": "1f2kM1Q3dZsl30H093rhQqgCSINC0XTHzPbZk1C13tis",
+		"gid": "0",
 		"filepath": "src/data/movies.csv"
 	}
 ]

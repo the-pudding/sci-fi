@@ -105,7 +105,7 @@ background: #200724;
 	pointer-events: none;
 	height: auto;
 	min-height: 10vh;
-	padding: 100vh 0 10vh;
+	padding: 80vh 0 90vh;
 	position: relative;
 	color: white;
 	box-sizing: content-box;
@@ -117,7 +117,7 @@ background: #200724;
 }
 @media screen and (max-width: 600px) {
 	.step {
-		padding: 100vh 0 10vh;
+		padding: 80vh 0 60vh;
 	}
 }
 .step.longtext {
@@ -132,7 +132,7 @@ background: #200724;
 	box-sizing: border-box !important;
 	position: relative;
 	pointer-events: none;
-	min-height: 120vh;
+	min-height: 140vh;
 	max-width: 100%;
 	display: flex;
 	align-items: center;
@@ -160,8 +160,8 @@ background: #200724;
 	margin: 0px auto;
 	color: #fff !important;	
 	text-align: left;
-	font-size: 1.2rem;
-	line-height: 1.8rem;
+	font-size: 1.3rem;
+	line-height: 2.1rem;
 	z-index: 3;
 	overflow-x: hidden;
 	border-radius: 2px;
@@ -181,7 +181,7 @@ background: #200724;
 }
 
 .textContainer p {
-	margin-bottom: 1rem;
+	margin-bottom: 1.2rem;
 	color: #F1DFEF;
 }
 .textContainer p span {

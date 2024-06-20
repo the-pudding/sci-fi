@@ -43,7 +43,7 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 " on:mouseenter|preventDefault={toggleTooltip} on:mouseleave|preventDefault={hideTooltip}>
 <div class='tooltip {tooltip_orientation} {shown}'>
 	<div class="film_title">{data["title_year"]}</div>
-	<div class="data_point">{data[sortedColumn]}</div>
+	<div class="data_point">{data[sortedColumn + "_exp"]}</div>
 </div>
 </div>
 <style>

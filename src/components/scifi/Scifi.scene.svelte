@@ -46,12 +46,12 @@
 	{:else}
 	{#if decade=="2030" && key=="background"}
 	<div class="{key}_container scene_containers" 
-	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * 0.5}%; height: {sceneHeight[key]* (30-sceneNum)/34}%;
+	style="top: {-(sceneNum) / (sceneMax-0.6) * 100 * 0.5}%; height: {sceneHeight[key]* (30-sceneNum)/34}%;
 	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
 	</div>
 	{:else}
 	<div class="{key}_container scene_containers {side}" 
-	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * scale}%; height: {sceneHeight[key]}%;
+	style="top: {-(sceneNum) / (sceneMax-0.6) * 100 * scale}%; height: {sceneHeight[key]}%;
 	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
 	</div>
 	{/if}
@@ -60,7 +60,7 @@
 	{/each}
 	{#if decade=="2030"}
 	<div class="end_container scene_containers" 
-	style="top: {-(sceneNum) / (sceneMax-0.8) * 100 * 1}%;
+	style="top: {-(sceneNum) / (sceneMax-1) * 100 * 1}%;
 	background-image: url('assets/scifi/2030-end.png');">
 	</div>
 	{/if}
@@ -213,7 +213,8 @@
 		background: #200724;
 	}
 	.scene-1950 .background_container {
-		left: 22%;
+		left: 13%;
+		width: 74%;
 	}
 	.scene-1950 .frontground_container.left {
 		left: 20%;
