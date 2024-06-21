@@ -186,13 +186,25 @@ background: #200724;
 }
 .textContainer p span {
 	display: inline;
-	background: #361730 !important;
-	color: #fb04d3 !important;
+	background: #fb04d3 !important;
+	color: #fff !important;
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
 	display: inline;
 	padding: 0px 2px;
 	line-height: 1.1;
+}
+.textContainer p .film_hl {
+	background: none !important;
+	color: yellow !important;
+	padding: 0px 0px;
+}
+.textContainer p .present {
+	background: #9d1fa1 !important;
+	color: #fff !important;
+}
+.textContainer p .instruction {
+	opacity: 0.6;
 }
 .textContainer p a {
 	color: white;

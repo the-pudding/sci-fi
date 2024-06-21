@@ -16,8 +16,26 @@
 		"frontground": 80
 	};
 
+	function calculateMarginTop(sceneNum) {
+		if (sceneNum === 0) {
+			return '-10%';
+		} else if (sceneNum == 4) {
+			return `12%`;
+		} else {
+			return `${(sceneNum - 1) * 12}%`;
+		}
+	}
+
+	function calculateHeight(h, n) {
+		let height = h + "%";
+		if (n == 4) {
+			height = h - ((10-n)) + "%";
+		}
+		return height;
+	}
+	let sceneAdjust = 0;
 	$: {
-		w, h;
+		w, h, sceneNum;
 		if (viewType == "zoom2030" && decade == "2020") {
 			opacity = 0
 		} else if (viewType == "zoom2020" && decade == "2030") {
@@ -28,8 +46,19 @@
 			opacity = 0;
 		}
 		stages = Array.from({ length: sceneMax + 1 }, (_, i) => i);
+		
+		let aspectRatio = w/h;
+		sceneAdjust = 0;
 		if (sceneNum == -1) {
-			sceneNum = -0.9;
+			if (viewType == "zoom1950") {
+				sceneAdjust = 0 - aspectRatio*12;
+			} else {
+				sceneAdjust = -0.8;	
+			}
+		} else if (sceneNum == 0) { 
+			sceneAdjust = 1;	
+		} else if (sceneNum == 4 && aspectRatio < 1){
+			sceneAdjust = (h*10)/(w);
 		}
 	}
 </script>
@@ -46,24 +75,24 @@
 	{:else}
 	{#if decade=="2030" && key=="background"}
 	<div class="{key}_container scene_containers" 
-	style="top: {-(sceneNum) / (sceneMax-0.6) * 100 * 0.5}%; height: {sceneHeight[key]* (30-sceneNum)/34}%;
-	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
-	</div>
-	{:else}
-	<div class="{key}_container scene_containers {side}" 
-	style="top: {-(sceneNum) / (sceneMax-0.6) * 100 * scale}%; height: {sceneHeight[key]}%;
-	background-image: url('assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png');">
-	</div>
-	{/if}
-	{/if}
-	{/each}
-	{/each}
-	{#if decade=="2030"}
-	<div class="end_container scene_containers" 
-	style="top: {-(sceneNum) / (sceneMax-1) * 100 * 1}%;
-	background-image: url('assets/scifi/2030-end.png');">
-	</div>
-	{/if}
+	style="transform: translateY({-sceneNum / sceneMax * 100}%); height: {calculateHeight(sceneHeight[key], sceneNum)}; margin-top: {calculateMarginTop(sceneNum)};">
+	<img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
+</div>
+{:else}
+<div class="{key}_container scene_containers {side}" 
+style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%); height: {sceneHeight[key]}%;">
+<img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
+</div>
+{/if}
+{/if}
+{/each}
+{/each}
+{#if decade=="2030"}
+<div class="end_container scene_containers" 
+style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
+<img src='assets/scifi/2030-end.png' />
+</div>
+{/if}
 
 <div class="shadow"></div>
 </div>
@@ -110,11 +139,11 @@
 		display: block;
 		position: absolute;
 		left: 0px;
-		bottom: 0px;
+		top: 0px;
 		width: 100%;
 		height: 100%;
 		transform-origin: bottom left;
-		transition: top 3500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: all 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		text-align: right;
 		font-size: 3px;
@@ -129,8 +158,9 @@
 		image-rendering: optimize-contrast;
 		-ms-interpolation-mode: nearest-neighbor;
 	}
-	.scene_containers {
-		transform-origin: bottom left;
+	.scene_containers img {
+		width: 100%;
+		height: 100%;
 	}
 	.scene_containers.right {
 		left: auto;
@@ -213,19 +243,35 @@
 		background: #200724;
 	}
 	.scene-1950 .background_container {
-		left: 13%;
-		width: 74%;
+		left: 0%;
+		width: 90%;
 	}
 	.scene-1950 .frontground_container.left {
 		left: 20%;
-		width: 40%;
-		margin-top: 200%;
+		width: 80%;
+		height: 132% !important;
+		margin-top: 25%;
+
 	} 
+	.scene-1950 .frontground_container.left img {
+		width: 70%;
+		height: 70%;
+		position: absolute;
+		bottom: 3%;
+	}
 	.scene-1950 .frontground_container.right {
-		right: 10%;
-		width: 50%;
-		margin-top: 220%;
+		right: 5%;
+		width: 80%;
+		margin-top: 50%;
+		height: 132% !important;
 	} 
+	.scene-1950 .frontground_container.right img {
+		width: 70%;
+		height: 70%;
+		position: absolute;
+		bottom: 3%;
+		right: 0px;
+	}
 	.scene-1950 .right.midground_container {
 		right: 10%;
 	}
@@ -247,14 +293,24 @@
 	}
 	.scene-2020 .frontground_container.left {
 		width: 43%;
-		margin-top: 260%;
-		height: 70% !important;
+		margin-top: 40%;
+		height: 138% !important;
+	}
+	.scene-2020 .frontground_container.left img {
+		height: 50%;
+		position: absolute;
+		bottom: 2%;
 	}
 	.scene-2020 .frontground_container.right {
 		width: 40%;
 		right: 0%;
-		margin-top: 280%;
-		height: 60% !important;
+		margin-top: 40%;
+		height: 138% !important;
+	}
+	.scene-2020 .frontground_container.right img {
+		height: 50%;
+		position: absolute;
+		bottom: 2%;
 	}
 
 	/*----------------
@@ -273,43 +329,113 @@
 	.scene-2030 .frontground_container.right {
 		left: 30%;
 		width: 40%;
-		height: 60% !important;
-		margin-top: 285%;
+		height: 138% !important;
+		margin-top: 90%;
+	}
+
+
+	@keyframes slideInOut {
+		0% {
+			left: 0%;
+			top: 0%;
+			transform: rotate(-14deg);
+		}
+		20% {
+			left: 5%;
+			top: -2%;
+			transform: rotate(2deg);
+		}
+		40% {
+			left: -5%;
+			top: 2%;
+			transform: rotate(-6deg);
+		}
+		60% {
+			left: 4%;
+			top: -4%;
+			transform: rotate(1deg);
+		}
+		80% {
+			left: -4%;
+			top: 4%;
+			transform: rotate(-6deg);
+		}
+		100% {
+			left: 0%;
+			top: 0%;
+			transform: rotate(-14deg);
+		}
+	}
+
+	.scene-2030 .frontground_container.right img {
+		position: absolute;
+		top: 10%;
+		width: 100%;
+		height: 42%;
+		transform-origin: center;
+		animation: slideInOut 15s infinite; /* Adjust duration as needed */
 	}
 	.scene-2030 .end_container {
 		position: absolute;
-		left: 30%;
-		height: 60% !important;
-		margin-top: 255%;
-		width: 40%;
+		height: 138%;
+		left: 25%;
+		width: 50%;
 		z-index: 100;
-
+/*		top: 50%;*/
+	}
+	.scene-2030 .end_container img {
+		width: 100%;
+		height: 80%;
+		position: absolute;
+		left: 0px;
+		bottom: -4%;
 	}
 	.scene-2030 .right.foreground_container {
-		height: 125% !important;
-		width: 17%;
-		margin-top: 40%;
+		width: 18%;
+		height: 120% !important;
+		margin-top: 13%;
+	}
+	.scene-2030 .right.foreground_container img {
+		height: 90%;
+		width: 90%;
+		position: absolute;
+		right: 0px;
 	}
 	.scene-2030 .left.foreground_container {
-		width: 47%;
-		left: -14%;
-		margin-top: 50%;
-		height: 120% !important;
+		width: 60%;
+		left: -19%;
+		height: 176% !important;
+	}
+	.scene-2030 .left.foreground_container img {
+		position: absolute;
+		bottom: 3%;
+		height: 90%;
 	}
 	.scene-2030 .right.midground_container {
 		right: 10%;
 		width: 18%;
-		height: 108% !important;
+	}
+	.scene-2030 .right.midground_container img {
+		position: absolute;
+		right: 10%;
+		width: 80%;
+		height: 80%;
 	}
 	.scene-2030 .left.midground_container {
-		left: 2%;
+		left: 6%;
 		width: 50%;
-		height: 110% !important;
+		height: 90% !important;
 	}
 	.scene-2030 .background_container {
 		left: 0%;
 		width: 100%;
-		transition: height 3500ms cubic-bezier(0.455, 0.030, 0.515, 0.955), top 3500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: all 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	}
+	.scene-2030 .background_container {
+		position: absolute;
+		left: 0px;
+		bottom: 0px;
+		width: 100%;
 	}
 </style>

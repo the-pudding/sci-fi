@@ -11,7 +11,7 @@
 	import { groupByDecade, sortByAttributes, getContrastingColors, options } from '$components/helpers/helpers.js';
 	const decades = groupByDecade(movies);
 
-	let h = 700;
+	let h = 1;
 	let w = 1;
 	let catLen;
 	let value;
@@ -21,20 +21,26 @@
 	let noAnimation = false;
 	let instantAnimation = true;
 	let zoomSpeed = 3400;
+	let loadGraphic = false;
+	let hl_movie_index = null;
 
 	const colorLookupEra = {
 		"future": "#fb04d3",
-		"present": "#dc83b9",
-		"past": "#c3a2b3",
-		"multiple/other": "#dedede"
+		"present": "#9d1fa1",
+		"past": "#6d1170",
+		"multiple/other": "#5d3769"
 	};
 	const colorLookup = {
-		"1": "#fb04d3",
-		"0.5": "#dc83b9",
-		"0": "#c3a2b3",
-		"N/A": "#dedede"
+		"yes": "#ff1cce",
+		"somewhat": "#bd1398",
+		"no": "#5d3769"
 	};
-	let colors = ["#fb04d3","#dc83b9","#c3a2b3","#dedede"];
+	const colorLookupNumber = {
+		1: "#ff1cce",
+		0.5: "#bd1398",
+		0: "#5d3769"
+	};
+	let colors = ["#fb04d3","#9d1fa1","#6d1170","#5d3769"];
 	let loaded = false;
 	let decadesShown;
 	let objectSize = { width: 24, height: 14 };
@@ -44,12 +50,8 @@
 	let prev_sceneNum;
 	let progress = 0;
 	let sceneRatio = 0.4;
-	const sceneMaxLookup = {
-		"1950": 4,
-		"2020": 4,
-		"2030": 4
-	}
-	let sceneMax = 4;
+
+	let sceneMax = 4.3;
 	let translate = {x: w, y: 0, z: 8};
 
 
@@ -69,33 +71,31 @@
 		const effectiveContainerHeight = h;
 		// Calculate the number of elements per row based on screen aspect ratio
 	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
-	    if (aspectRatio < 1) {
-	    	sceneMax = sceneMax + (1 - aspectRatio)*.2;
-	    }
+	    // sceneMax = 4 + (h/(w*0.8));
     	// Calculate object sizes to ensure 200 elements per decade fit
-		const elementsPerDecade = 200;
-		const spacePerDecade = effectiveContainerWidth / decadeCount;
-		const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
-		objectSize.width = objectWidth;
-		objectSize.height = objectWidth * 1.4;
+	    const elementsPerDecade = 200;
+	    const spacePerDecade = effectiveContainerWidth / decadeCount;
+	    const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
+	    objectSize.width = objectWidth;
+	    objectSize.height = objectWidth * 1.4;
 
 
-		if (viewType == "zoom1950v2" && aspectRatio < 1.2) {
-			objectSize.width = objectWidth * (2.4-aspectRatio);
-			objectSize.height = objectWidth * (3.4-aspectRatio);
-		}
+	    if (viewType == "zoom1950v2" && aspectRatio < 1.2) {
+	    	objectSize.width = objectWidth * (2.4-aspectRatio);
+	    	objectSize.height = objectWidth * (3.4-aspectRatio);
+	    }
 
     	// Assign unique colors to each unique value of the sorted column
-		const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
+	    const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
 
     	// Group objects by decade
-		const groupedByDecade = objects.reduce((group, obj) => {
-			group[obj.decade] = group[obj.decade] || [];
-			group[obj.decade].push(obj);
-			return group;
-		}, {});
+	    const groupedByDecade = objects.reduce((group, obj) => {
+	    	group[obj.decade] = group[obj.decade] || [];
+	    	group[obj.decade].push(obj);
+	    	return group;
+	    }, {});
 
-		const positions = {};
+	    const positions = {};
 
 	    
 	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
@@ -164,10 +164,12 @@
             const containerWidth = (w * 0.125) - 20; // 12.5% of the width minus some padding
             const xRelativePos = (xPos / spacePerDecade) * 100 + (spacePerDecade - objectSize.width*elementsPerRow)/spacePerDecade*50;
             const yRelativePos = (yPos / effectiveContainerHeight) * 100;
-            let movie_colors = colorLookup;
+            let movie_colors = colorLookupNumber;
+            colors = colorLookup;
             if (sortedColumn.indexOf("Era") != -1) {
             	movie_colors = colorLookupEra;
-            } 
+            	colors = colorLookupEra;
+            }
             positions[objIndex] = {
             	x: `${xRelativePos}%`,
             	y: `${yRelativePos}%`,
@@ -185,6 +187,7 @@
 	    return positions;
 	}
 
+
 	function dispatchResize() {
 		instantAnimation = true;
 		positions = calculatePositions();
@@ -196,6 +199,7 @@
 		value = value === undefined ? 0 : value;
 		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
 		sortedColumn = copy.timeline[value]["variable"];
+		hl_movie_index = copy.timeline[value]["movie_hl"];
 		viewType = copy.timeline[value]["view"] === undefined ? "all" : copy.timeline[value]["view"];
 		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
 
@@ -213,6 +217,9 @@
 			zoomSpeed = copy.timeline[value].zoomSpeed;
 		} else {
 			zoomSpeed = 3400;
+		}
+		if (h > 1 && w > 1) {
+			loadGraphic = "loadGraphic";
 		}
 	}
 
@@ -236,16 +243,17 @@
 	});
 </script>
 <svelte:window on:resize={dispatchResize}></svelte:window>
+
 <div class="outsideContainer">
 	<section id="scrolly">
 
 		<div class="visualContainer {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
 			{#if viewType == "all" || viewType.indexOf("v2") != -1}
 			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
-				<div class="legend_title" in:slide>{copy.timeline[value].hed}</div>
-				<div class="legend_container" in:slide>
+				<div class="legend_title">{copy.timeline[value].hed}</div>
+				<div class="legend_container">
 					{#each copy.timeline[value].categories as category, i}
-					<div class="legendItem" style="background: {colors[i]};" in:slide>{category}</div>
+					<div class="legendItem" style="background: {colors[category.toLowerCase()]};">{category}</div>
 					{/each}
 				</div>
 			</div>
@@ -255,11 +263,11 @@
 			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			">
 			{#each Object.keys(decades) as decade}
-			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
+			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 			{/each}
-			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneMaxLookup} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion}/>
+			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 		</div>
-		<div class="scene_wrapper">
+		<div class="scene_wrapper {loadGraphic}">
 			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
@@ -293,6 +301,14 @@
 </div>
 
 <style>
+	.debug {
+		position: fixed;
+		left: 0px;
+		top: 0px;
+		background: black;
+		color: white;
+		z-index: 99999999;
+	}
 	.visualContainer {
 		overflow: hidden;
 		position: sticky;
@@ -302,7 +318,7 @@
 		width: 100%;
 		padding: 0 0px;
 		height: 100vh;
-		transition: background 4000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: background 0ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.visualContainer.reduceMotion-true, .visualContainer.reduceMotion-true * {
@@ -386,6 +402,12 @@
 		top: 0px;
 		width: 100%;
 		height: 100vh;
+		opacity: 0;
+		transition: opacity 300ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	}
+	.scene_wrapper.loadGraphic {
+		opacity: 1;
 	}
 	.reduceMotion-true .zoomContainer {
 		transition: none !important;

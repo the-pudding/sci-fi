@@ -5,7 +5,7 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, sceneMaxLookup, progress, sceneRatio, prefersReducedMotion;
+	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, progress, sceneRatio, prefersReducedMotion, hl_movie_index;
 	let opacity = 0;
 	let duration = 1000; // Duration of the transition in milliseconds
 
@@ -32,6 +32,7 @@
 			opacity = 0;
 		}
 		datapoint.set(calculateValues());
+		hl_movie_index;
 	}
 
 	// Derived store to ensure no decimals
@@ -46,20 +47,9 @@
 	{/if}
 	<div class="movie-container" style="opacity: {opacity};">
 		{#each movies as movie}
-		<Movie data={movie} position={positions[movie.index]} {viewType} sortedColumn={sortedColumn} {decade}/>
+		<Movie data={movie} position={positions[movie.index]} {viewType} sortedColumn={sortedColumn} {decade} {hl_movie_index}/>
 		{/each}
 	</div>
-	<!-- {#if ["1950"].indexOf(decade) != -1}
-		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
-	{/if}
-	{#if decade == "2020"}
-		{#if viewType != "zoom2030"}
-		<Scene {decade} {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup[decade]} {sceneNum} {progress} {sceneRatio} nextDecade="nextDecade"/>
-		{/if}
-		{#if viewType != "zoom2020"}
-		<Scene decade="2030" {value} {barHeight} {bottomPadding} {viewType} sceneMax={sceneMaxLookup["2030"]} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade="nextDecade" />
-		{/if}
-	{/if} -->
 </div>
 
 <style>
