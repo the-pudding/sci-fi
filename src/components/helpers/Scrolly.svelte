@@ -11,12 +11,14 @@
 	 * optional params with defaults
 	 * <Scrolly root={null} top={0} bottom={0} increments={100}>
 	 */
-	import { onMount } from "svelte";
+	import { onMount, onDestroy } from "svelte";
+
 	export let root = null;
 	export let top = 0;
 	export let bottom = 0;
 	export let increments = 100;
 	export let value = undefined;
+	export let progress = 0; // New progress variable
 
 	const steps = [];
 	const threshold = [];
@@ -24,7 +26,6 @@
 	let nodes = [];
 	let intersectionObservers = [];
 	let container;
-	export let progress;
 
 	$: top, bottom, update();
 
@@ -34,50 +35,18 @@
 	};
 
 	const mostInView = () => {
-  let maxRatio = 0;
-  let maxIndex = -1; // initialize to -1 to handle the case when no step is intersecting
+		let maxRatio = 0;
+		let maxIndex = 0;
+		for (let i = 0; i < steps.length; i++) {
+			if (steps[i] > maxRatio) {
+				maxRatio = steps[i];
+				maxIndex = i;
+			}
+		}
 
-  // Get the viewport height
-  const viewportHeight = window.innerHeight;
-
-  for (let i = 0; i < steps.length; i++) {
-    if (steps[i] > 0) {
-      // Check if the current step is intersecting with the top of the screen
-      const currentStepElement = nodes[i];
-      const currentStepTop = currentStepElement.offsetTop;
-      const currentStepHeight = currentStepElement.offsetHeight;
-      const topOfScreenPosition = window.pageYOffset;
-
-      if (currentStepTop <= topOfScreenPosition && currentStepTop + currentStepHeight >= topOfScreenPosition) {
-        maxRatio = steps[i];
-        maxIndex = i;
-      }
-    }
-  }
-
-  if (maxIndex >= 0) {
-    value = maxIndex;
-
-    // Get the current step element
-    const currentStepElement = nodes[maxIndex];
-
-    // Calculate the scroll progress based on the current step and top of the screen
-    const currentStepTop = currentStepElement.offsetTop;
-    const currentStepHeight = currentStepElement.offsetHeight;
-    const scrollPosition = window.pageYOffset;
-    const scrollProgressInStep = Math.max(
-      0,
-      Math.min(
-        1,
-        (scrollPosition - currentStepTop) / currentStepHeight
-      )
-    );
-
-   	progress = scrollProgressInStep;
-  } else {
-    value = undefined;
-  }
-};
+		if (maxRatio > 0) value = maxIndex;
+		else value = undefined;
+	};
 
 	const createObserver = (node, index) => {
 		const handleIntersect = (e) => {
@@ -99,15 +68,37 @@
 		intersectionObservers[index] = io;
 	};
 
+	const handleScroll = () => {
+		if (!container) return;
+		const scrollTop = container.scrollTop || container.scrollY || window.pageYOffset;
+		const containerTop = container.getBoundingClientRect().top + scrollTop;
+		const containerHeight = container.scrollHeight;
+		const windowHeight = window.innerHeight;
+
+		const scrollPosition = scrollTop - containerTop;
+		progress = Math.min(Math.max(scrollPosition / (containerHeight - windowHeight), 0), 1);
+	};
+
 	onMount(() => {
 		for (let i = 0; i < increments + 1; i++) {
 			threshold.push(i / increments);
 		}
 		nodes = container.querySelectorAll(":scope > *:not(iframe)");
 		update();
+
+		if (typeof window !== 'undefined') {
+			window.addEventListener('scroll', handleScroll);
+		}
+	});
+
+	onDestroy(() => {
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('scroll', handleScroll);
+		}
+		intersectionObservers.forEach(io => io.disconnect());
 	});
 </script>
 
-<div id="scrolly_container" bind:this={container}>
+<div bind:this={container}>
 	<slot />
 </div>

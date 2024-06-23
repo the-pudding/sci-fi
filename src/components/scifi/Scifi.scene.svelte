@@ -1,6 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
-	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, prefersReducedMotion, w, h;
+	export let value, scrollyValue, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, prefersReducedMotion, w, h, timeline_divider;
 	let opacity = 0;
 	let stages = [];
 	const scalings = {
@@ -15,6 +15,7 @@
 		"foreground": 132,
 		"frontground": 80
 	};
+	let adj = 0;
 
 	function calculateMarginTop(sceneNum) {
 		if (sceneNum === 0) {
@@ -35,7 +36,8 @@
 	}
 	let sceneAdjust = 0;
 	$: {
-		w, h, sceneNum;
+		w, h;
+		adj = value % timeline_divider / timeline_divider;
 		if (viewType == "zoom2030" && decade == "2020") {
 			opacity = 0
 		} else if (viewType == "zoom2020" && decade == "2030") {
@@ -65,8 +67,8 @@
 
 {#if (decade=="2020" && viewType=="zoom2020") || (decade=="2030" && viewType=="zoom2030") || (decade=="1950" && viewType=="zoom1950")}
 <div class="scene scene-{decade} {nextDecade} scene{opacity}" style="width: {w}px; height: {w*2.8}px; bottom: {bottomPadding}px; opacity: {opacity};" transition:fade>
-	<div class="background_color" style="margin-top:{-(sceneNum+1) / sceneMax * 100}%"></div>
-	<div class="foreground_color" style="margin-top:{-(sceneNum+1) / sceneMax * 100}%"></div>
+	<div class="background_color" style="margin-top:{-((sceneNum+adj)+1) / sceneMax * 100}%"></div>
+	<div class="foreground_color" style="margin-top:{-((sceneNum+adj)+1) / sceneMax * 100}%"></div>
 	
 
 	{#each ["left", "right"] as side}
@@ -75,12 +77,12 @@
 	{:else}
 	{#if decade=="2030" && key=="background"}
 	<div class="{key}_container scene_containers" 
-	style="transform: translateY({-sceneNum / sceneMax * 100}%); height: {calculateHeight(sceneHeight[key], sceneNum)}; margin-top: {calculateMarginTop(sceneNum)};">
+	style="transform: translateY({-(sceneNum+adj) / sceneMax * 100}%); height: {calculateHeight(sceneHeight[key], (sceneNum+adj))}; margin-top: {calculateMarginTop((sceneNum+adj))};">
 	<img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
 </div>
 {:else}
 <div class="{key}_container scene_containers {side}" 
-style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%); height: {sceneHeight[key]}%;">
+style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%); height: {sceneHeight[key]}%;">
 <img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
 </div>
 {/if}
@@ -89,7 +91,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%); heigh
 {/each}
 {#if decade=="2030"}
 <div class="end_container scene_containers" 
-style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
+style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);">
 <img src='assets/scifi/2030-end.png' />
 </div>
 {/if}
@@ -104,7 +106,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
 		top: 0px;
 		left: 0%;
 		width: 100%;
-		transition: opacity 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: opacity 200ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		overflow: hidden;
 		pointer-events: none;
@@ -115,7 +117,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
 		top: 0px;
 		height: 30%;
 		width: 100%;
-		transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: margin-top 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	
@@ -125,7 +127,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
 		bottom: 0px;
 		height: 65%;
 		width: 100%;
-		transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: margin-top 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.scene1 {
@@ -143,7 +145,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
 		width: 100%;
 		height: 100%;
 		transform-origin: bottom left;
-		transition: all 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: all 200ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		text-align: right;
 		font-size: 3px;
@@ -429,7 +431,7 @@ style="transform: translateY({-sceneNum / sceneMax * 100 + sceneAdjust}%);">
 	.scene-2030 .background_container {
 		left: 0%;
 		width: 100%;
-		transition: all 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: all 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
 	.scene-2030 .background_container {

@@ -64,6 +64,7 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 		-webkit-user-select: none; /* Safari */
 		-ms-user-select: none; /* IE 10 and IE 11 */
 		user-select: none; /* Standard syntax */
+		transform: translateZ(0);
 	}
 	.movie.hl {
 		background: black !important;

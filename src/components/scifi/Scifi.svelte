@@ -23,7 +23,10 @@
 	let zoomSpeed = 3400;
 	let loadGraphic = false;
 	let hl_movie_index = null;
-
+	const timeline_divider = 1;
+	let full_length = copy.timeline.length*timeline_divider;
+	const numbers = Array.from({ length: full_length }, (_, i) => i);
+	
 	const colorLookupEra = {
 		"future": "#fb04d3",
 		"present": "#9d1fa1",
@@ -193,17 +196,18 @@
 		positions = calculatePositions();
 	}
 
-
+	let scrollyValue = 0;
 	$: {
 		w, h, progress, titleOn, barHeight;
 		value = value === undefined ? 0 : value;
-		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
-		sortedColumn = copy.timeline[value]["variable"];
-		hl_movie_index = copy.timeline[value]["movie_hl"];
-		viewType = copy.timeline[value]["view"] === undefined ? "all" : copy.timeline[value]["view"];
-		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
+		scrollyValue = Math.floor(value / timeline_divider);
+		decadesShown = copy.timeline[scrollyValue].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[scrollyValue].decades;
+		sortedColumn = copy.timeline[scrollyValue]["variable"];
+		hl_movie_index = copy.timeline[scrollyValue]["movie_hl"];
+		viewType = copy.timeline[scrollyValue]["view"] === undefined ? "all" : copy.timeline[scrollyValue]["view"];
+		sceneNum = copy.timeline[scrollyValue]["sceneNum"] === undefined ? 0 : Number(copy.timeline[scrollyValue]["sceneNum"]);
 
-		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
+		if (value / timeline_divider % 0 && prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
 			positions = calculatePositions();
 			prev_viewType = viewType;
 			prev_sceneNum = sceneNum;	
@@ -213,8 +217,8 @@
 		if (progress != 0) {
 			instantAnimation = false;
 		}
-		if (copy.timeline[value].zoomSpeed) {
-			zoomSpeed = copy.timeline[value].zoomSpeed;
+		if (copy.timeline[scrollyValue].zoomSpeed) {
+			zoomSpeed = copy.timeline[scrollyValue].zoomSpeed;
 		} else {
 			zoomSpeed = 3400;
 		}
@@ -243,16 +247,16 @@
 	});
 </script>
 <svelte:window on:resize={dispatchResize}></svelte:window>
-
+<div class="debug">{value}<br>{progress}</div>
 <div class="outsideContainer">
 	<section id="scrolly">
 
 		<div class="visualContainer {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
 			{#if viewType == "all" || viewType.indexOf("v2") != -1}
 			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
-				<div class="legend_title">{copy.timeline[value].hed}</div>
+				<div class="legend_title">{copy.timeline[scrollyValue].hed}</div>
 				<div class="legend_container">
-					{#each copy.timeline[value].categories as category, i}
+					{#each copy.timeline[scrollyValue].categories as category, i}
 					<div class="legendItem" style="background: {colors[category.toLowerCase()]};">{category}</div>
 					{/each}
 				</div>
@@ -263,14 +267,14 @@
 			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			">
 			{#each Object.keys(decades) as decade}
-			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} value={scrollyValue} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 			{/each}
-			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} value={scrollyValue} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 		</div>
 		<div class="scene_wrapper {loadGraphic}">
-			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
-			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
-			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={1950} {timeline_divider} {w} {h} {value} scrollyValue={scrollyValue} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2020} {timeline_divider} {w} {h} {value} scrollyValue={scrollyValue} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
+			<Scene decade={2030} {timeline_divider} {w} {h} {value} scrollyValue={scrollyValue} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} nextDecade=""/>
 		</div>
 
 		{#if sceneNum == -1 && viewType == "zoom1950"}
@@ -284,17 +288,33 @@
 	</div>
 
 
-	<Scrolly bind:value top={0} bind:progress={progress}>
-		{#each copy.timeline as step_obj, i}
+	<Scrolly increments={1} bottom={0} top={300} bind:value bind:progress={progress}>
+		{#each numbers as num, i}
+			{@const active = value === i}
+			<!-- {@const is_firstyear = copy.timeline.findIndex(item => item.time === copy.timeline[num/100].time) === num} -->
+			{#if num % timeline_divider == 0 || num == 0}
+				<div class="step {copy.timeline[num/timeline_divider].addclass ? copy.timeline[num/timeline_divider].addclass : ''} steptype_{copy.timeline[num/timeline_divider].type} textStep" class:active>
+					{#if copy.timeline[num/timeline_divider].text != ""}	
+					<Text sortedColumn={sortedColumn} copy={copy.timeline[num/timeline_divider].text}  type={copy.timeline[num/timeline_divider].type} add={copy.timeline[num/timeline_divider].addclass === "longcopy" ? "longcopy" : "shortcopy"} />
+					{/if}
+				</div>
+			{:else}
+				<div class="step" class:active></div>
+			{/if}
+		
+		{/each}
+		<!-- {#each copy.timeline as step_obj, i}
 		{@const active = value === i}
 		{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
-
+		{#each numbers as num}
+			<div class="step" class:active></div>
+		{/each}
 		<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
 			{#if step_obj.text != ""}	
 			<Text sortedColumn={sortedColumn} copy={step_obj.text}  type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
 			{/if}
 		</div>
-		{/each}
+		{/each} -->
 	</Scrolly>
 
 </section>

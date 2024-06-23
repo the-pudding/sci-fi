@@ -104,12 +104,18 @@ background: #200724;
 .step {
 	pointer-events: none;
 	height: auto;
-	min-height: 10vh;
-	padding: 80vh 0 90vh;
+	min-height: 3vh;
+/*	padding: 80vh 0 90vh;*/
 	position: relative;
 	color: white;
 	box-sizing: content-box;
 /*	border: 2px solid red;*/
+}
+.textStep {
+	padding: 80vh 0 0vh
+}
+.step.active {
+	color: red;
 }
 .step:first-child {
 	height: 0px;
