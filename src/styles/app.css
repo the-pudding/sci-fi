@@ -99,26 +99,20 @@ body, main {
 background: #200724;
 }
 #scrolly_container {
-	margin-top: -80vh;
+	margin-top: -100vh;
 }
 .step {
-	pointer-events: none;
+/*	pointer-events: none;*/
 	height: auto;
-	min-height: 3vh;
-/*	padding: 80vh 0 90vh;*/
+	min-height: 10vh;
+	padding: 80vh 0 90vh;
 	position: relative;
 	color: white;
-	box-sizing: content-box;
-/*	border: 2px solid red;*/
-}
-.textStep {
-	padding: 80vh 0 0vh
-}
-.step.active {
-	color: red;
+	box-sizing: border-box;
+	border: 2px solid red;
 }
 .step:first-child {
-	height: 0px;
+	height: 50vh;
 	padding: 0px;
 }
 @media screen and (max-width: 600px) {

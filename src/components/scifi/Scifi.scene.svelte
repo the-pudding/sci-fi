@@ -1,8 +1,9 @@
 <script>
 	import { fade } from 'svelte/transition';
-	export let value, scrollyValue, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, prefersReducedMotion, w, h, timeline_divider;
+	export let value, barHeight, bottomPadding, viewType, sceneMax, sceneNum, nextDecade, decade, progress, sceneRatio, stepCount, prefersReducedMotion, w, h;
 	let opacity = 0;
 	let stages = [];
+	let top = 0;
 	const scalings = {
 		"background": .6,
 		"midground": .8,
@@ -15,16 +16,16 @@
 		"foreground": 132,
 		"frontground": 80
 	};
-	let adj = 0;
 
 	function calculateMarginTop(sceneNum) {
-		if (sceneNum === 0) {
-			return '-10%';
-		} else if (sceneNum == 4) {
-			return `12%`;
-		} else {
-			return `${(sceneNum - 1) * 12}%`;
-		}
+		// if (sceneNum === 0) {
+		// 	return '-10%';
+		// } else if (sceneNum == 4) {
+		// 	return `12%`;
+		// } else {
+		// 	return `${(sceneNum - 1) * 12}%`;
+		// }
+		return 0;
 	}
 
 	function calculateHeight(h, n) {
@@ -36,8 +37,7 @@
 	}
 	let sceneAdjust = 0;
 	$: {
-		w, h;
-		adj = value % timeline_divider / timeline_divider;
+		w, h, sceneNum;
 		if (viewType == "zoom2030" && decade == "2020") {
 			opacity = 0
 		} else if (viewType == "zoom2020" && decade == "2030") {
@@ -50,25 +50,30 @@
 		stages = Array.from({ length: sceneMax + 1 }, (_, i) => i);
 		
 		let aspectRatio = w/h;
-		sceneAdjust = 0;
-		if (sceneNum == -1) {
-			if (viewType == "zoom1950") {
-				sceneAdjust = 0 - aspectRatio*12;
-			} else {
-				sceneAdjust = -0.8;	
-			}
-		} else if (sceneNum == 0) { 
-			sceneAdjust = 1;	
-		} else if (sceneNum == 4 && aspectRatio < 1){
-			sceneAdjust = (h*10)/(w);
+		// sceneAdjust = 0;
+		// if (sceneNum < 0) {
+		// 	if (viewType == "zoom1950") {
+		// 		sceneAdjust = 0 - aspectRatio*12;
+		// 	} else {
+		// 		sceneAdjust = -0.8;	
+		// 	}
+		// } else if (sceneNum == 0) { 
+		// 	sceneAdjust = 1;	
+		// } else if (sceneNum == 4 && aspectRatio < 1){
+		// 	sceneAdjust = (h*10)/(w);
+		// } 
+		
+		top = sceneNum + progress/100;
+		if (progress == 0) {
+			top += 1;
 		}
 	}
 </script>
 
 {#if (decade=="2020" && viewType=="zoom2020") || (decade=="2030" && viewType=="zoom2030") || (decade=="1950" && viewType=="zoom1950")}
 <div class="scene scene-{decade} {nextDecade} scene{opacity}" style="width: {w}px; height: {w*2.8}px; bottom: {bottomPadding}px; opacity: {opacity};" transition:fade>
-	<div class="background_color" style="margin-top:{-((sceneNum+adj)+1) / sceneMax * 100}%"></div>
-	<div class="foreground_color" style="margin-top:{-((sceneNum+adj)+1) / sceneMax * 100}%"></div>
+	<div class="background_color" style="margin-top:{-(top+1) / sceneMax * 100}%"></div>
+	<div class="foreground_color" style="margin-top:{-(top+1) / sceneMax * 100}%"></div>
 	
 
 	{#each ["left", "right"] as side}
@@ -77,12 +82,12 @@
 	{:else}
 	{#if decade=="2030" && key=="background"}
 	<div class="{key}_container scene_containers" 
-	style="transform: translateY({-(sceneNum+adj) / sceneMax * 100}%); height: {calculateHeight(sceneHeight[key], (sceneNum+adj))}; margin-top: {calculateMarginTop((sceneNum+adj))};">
+	style="transform: translateY({-top / sceneMax * 100}%); height: {calculateHeight(sceneHeight[key], top)}; margin-top: {calculateMarginTop(top)};">
 	<img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
 </div>
 {:else}
 <div class="{key}_container scene_containers {side}" 
-style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%); height: {sceneHeight[key]}%;">
+style="transform: translateY({-top / sceneMax * 100 + sceneAdjust}%); height: {sceneHeight[key]}%;">
 <img src='assets/scifi/{decade}-{key}{key != 'background' ? `-${side}` : ''}.png' />
 </div>
 {/if}
@@ -91,7 +96,7 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 {/each}
 {#if decade=="2030"}
 <div class="end_container scene_containers" 
-style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);">
+style="transform: translateY({-top / sceneMax * 100 + sceneAdjust}%);">
 <img src='assets/scifi/2030-end.png' />
 </div>
 {/if}
@@ -106,8 +111,8 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 		top: 0px;
 		left: 0%;
 		width: 100%;
-		transition: opacity 200ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+/*		transition: opacity 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);*/
 		overflow: hidden;
 		pointer-events: none;
 	}
@@ -117,8 +122,8 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 		top: 0px;
 		height: 30%;
 		width: 100%;
-		transition: margin-top 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+/*		transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);*/
 	}
 	
 	.scene .foreground_color {
@@ -127,8 +132,8 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 		bottom: 0px;
 		height: 65%;
 		width: 100%;
-		transition: margin-top 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		/*transition: margin-top 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);*/
 	}
 	.scene1 {
 		pointer-events: auto;
@@ -145,7 +150,7 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 		width: 100%;
 		height: 100%;
 		transform-origin: bottom left;
-		transition: all 200ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: all 10ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		text-align: right;
 		font-size: 3px;
@@ -200,8 +205,6 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 		z-index: 100;
 	}
 	
-	
-
 	.foreground_container {
 		width: 16%;
 		left: 0%;
@@ -431,8 +434,8 @@ style="transform: translateY({-(sceneNum+adj) / sceneMax * 100 + sceneAdjust}%);
 	.scene-2030 .background_container {
 		left: 0%;
 		width: 100%;
-		transition: all 50ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		/*transition: all 3400ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);*/
 	}
 	.scene-2030 .background_container {
 		position: absolute;

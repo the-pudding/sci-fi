@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * This component manages which item is most in view for scroll triggering
+	 * This component manages which item is intersecting with the top of the window for scroll triggering
 	 * example:
 	 * <Scrolly
 	 * 	bind:value={scrollIndex}
@@ -26,6 +26,7 @@
 	let nodes = [];
 	let intersectionObservers = [];
 	let container;
+	let topIntersectingNode;
 
 	$: top, bottom, update();
 
@@ -34,26 +35,25 @@
 		nodes.forEach(createObserver);
 	};
 
-	const mostInView = () => {
-		let maxRatio = 0;
-		let maxIndex = 0;
+	const topIntersecting = () => {
 		for (let i = 0; i < steps.length; i++) {
-			if (steps[i] > maxRatio) {
-				maxRatio = steps[i];
-				maxIndex = i;
+			if (steps[i] > 0) {
+				value = i;
+				topIntersectingNode = nodes[i];
+				handleScroll(); // Update progress for the top intersecting container
+				return;
 			}
 		}
-
-		if (maxRatio > 0) value = maxIndex;
-		else value = undefined;
+		value = undefined;
+		topIntersectingNode = null;
+		progress = 0;
 	};
 
 	const createObserver = (node, index) => {
 		const handleIntersect = (e) => {
 			const intersecting = e[0].isIntersecting;
-			const ratio = e[0].intersectionRatio;
-			steps[index] = ratio;
-			mostInView();
+			steps[index] = intersecting ? e[0].intersectionRatio : 0;
+			topIntersecting();
 		};
 
 		const marginTop = top ? top * -1 : 0;
@@ -69,14 +69,22 @@
 	};
 
 	const handleScroll = () => {
-		if (!container) return;
-		const scrollTop = container.scrollTop || container.scrollY || window.pageYOffset;
-		const containerTop = container.getBoundingClientRect().top + scrollTop;
-		const containerHeight = container.scrollHeight;
+		if (!topIntersectingNode) return;
+
+		const containerRect = topIntersectingNode.getBoundingClientRect();
 		const windowHeight = window.innerHeight;
 
+		if (containerRect.top > windowHeight || containerRect.bottom < 0) {
+			progress = 0;
+			return;
+		}
+
+		const scrollTop = window.scrollY || window.pageYOffset;
+		const containerTop = scrollTop + containerRect.top;
+		const containerHeight = topIntersectingNode.scrollHeight;
+
 		const scrollPosition = scrollTop - containerTop;
-		progress = Math.min(Math.max(scrollPosition / (containerHeight - windowHeight), 0), 1);
+		progress = Math.min(Math.max((scrollPosition / containerHeight) * 100, 0), 100);
 	};
 
 	onMount(() => {
@@ -99,6 +107,6 @@
 	});
 </script>
 
-<div bind:this={container}>
+<div id="scrolly_container" bind:this={container}>
 	<slot />
 </div>
