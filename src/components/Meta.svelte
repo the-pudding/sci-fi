@@ -1,7 +1,7 @@
 <script>
-	export let title = "Title TK";
-	export let description = "Description TK";
-	export let url = "https://pudding.cool";
+	export let title = "Who killed the world?";
+	export let description = "Explore science fiction worlds from the last few decades – and what these fictional settings tell us about ourselves";
+	export let url = "https://pudding.cool/2024/07/scifi";
 	export let keywords = "";
 	export let preloadFont = [];
 </script>
