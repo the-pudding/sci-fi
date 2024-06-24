@@ -46,7 +46,7 @@
 		}
 		value = undefined;
 		topIntersectingNode = null;
-		progress = 0;
+		progress = 100;
 	};
 
 	const createObserver = (node, index) => {
@@ -75,7 +75,7 @@
 		const windowHeight = window.innerHeight;
 
 		if (containerRect.top > windowHeight || containerRect.bottom < 0) {
-			progress = 0;
+			progress = 100;
 			return;
 		}
 

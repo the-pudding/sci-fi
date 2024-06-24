@@ -5,9 +5,9 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, progress, sceneRatio, prefersReducedMotion, hl_movie_index;
+	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, progress, sceneRatio, prefersReducedMotion, hl_movie_index, noAnimation;
 	let opacity = 0;
-	let duration = 1000; // Duration of the transition in milliseconds
+	let duration = 500; // Duration of the transition in milliseconds
 
 	const datapoint = tweened(0, {
 		duration,
@@ -30,6 +30,9 @@
 			opacity = 1;
 		} else {
 			opacity = 0;
+		}
+		if (prefersReducedMotion || noAnimation) {
+			duration = 0;
 		}
 		datapoint.set(calculateValues());
 		hl_movie_index;

@@ -40,8 +40,7 @@ top: {position.y};
 width: {position.width};
 height: {position.height};
 background: {position.color};
-transition: right {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
-left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000),
+transition: left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000),
 top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
 bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
 background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);

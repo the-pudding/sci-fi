@@ -20,6 +20,7 @@
 	let prefersReducedMotion = false;
 	let noAnimation = false;
 	let instantAnimation = true;
+
 	let zoomSpeed = 3400;
 	let loadGraphic = false;
 	let hl_movie_index = null;
@@ -133,9 +134,8 @@
 	    	titleOn = "end";
 	    }
 	    // reset translate
-	    translate = {x: 0, y: 0, z: 1};
-
-	    if (viewType.indexOf("v2") != -1) {
+	    translate = {x: 0, y: 0, z: 1}; 
+	    if (viewType != "all") {
 	    	translate.y = -(barHeight*translate.z) + barHeight;
 	    	// if (aspectRatio < 0.9) {
 	    	// 	translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
@@ -171,12 +171,16 @@
             	movie_colors = colorLookupEra;
             	colors = colorLookupEra;
             }
+            let speed = 0;
+            if (!prefersReducedMotion || !noAnimation) {
+            	speed = Math.random() * 1200 + 100;
+            }
             positions[objIndex] = {
             	x: `${xRelativePos}%`,
             	y: `${yRelativePos}%`,
             	width: `${objectSize.width + 1}px`,
             	height: `${objectSize.height}px`,
-            	speed: Math.random() * 1200 + 100,
+            	speed: speed,
                 color: movie_colors[obj[sortedColumn]] // Assign color based on sortedColumn value
             };
 
@@ -241,21 +245,25 @@
         // Set initial value
 		prefersReducedMotion = mediaQuery.matches;
         // Cleanup function
+        if (w < 500) {
+			prefersReducedMotion = true;
+			noAnimation = true;
+		}
 		return () => {
 			mediaQuery.removeListener(updatePreference);
 		};
 	});
 </script>
 <svelte:window on:resize={dispatchResize}></svelte:window>
-<div class="debug">
+<!-- <div class="debug">
 	{value}<br>
 	{copy.timeline[value]["sceneNum"]}<br>
 	{progress}
-</div>
+</div> -->
 <div class="outsideContainer">
 	<section id="scrolly">
 
-		<div class="visualContainer {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
+		<div class="visualContainer {loadGraphic} {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}" bind:clientWidth={w} bind:clientHeight={h}>
 			{#if viewType == "all" || viewType.indexOf("v2") != -1}
 			<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
 				<div class="legend_title">{copy.timeline[value].hed}</div>
@@ -271,11 +279,11 @@
 			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			">
 			{#each Object.keys(decades) as decade}
-			<Decade decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade {noAnimation} decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 			{/each}
-			<Decade decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade {noAnimation} decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 		</div>
-		<div class="scene_wrapper {loadGraphic}">
+		<div class="scene_wrapper">
 			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {stepCount} nextDecade=""/>
 			<Scene decade={2020} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {stepCount} nextDecade=""/>
 			<Scene decade={2030} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {stepCount} nextDecade=""/>
@@ -285,7 +293,9 @@
 		<div class="title_container" transition:fade>
 			<h1>{copy.Hed}</h1>
 			<div class="byline">by <a href="https://pudding.cool/author/alvin-chang/">Alvin Chang</a></div>
+			{#if w > 500}
 			<Toggle label="Animation" bind:value={noAnimation} options={ [{value: false, text: "On"}, {value: true, text: "Off"}] }/>
+			{/if}
 		</div>
 		{/if}
 
@@ -297,15 +307,23 @@
 		{@const active = value === i}
 		{@const is_firstyear = copy.timeline.findIndex(item => item.time === step_obj.time) === i}
 
-		<div class="step {step_obj.addclass ? step_obj.addclass : ''} steptype_{step_obj.type}" class:active>
+		<div class="step {step_obj.addclass ? step_obj.addclass : 'short_stage'} steptype_{step_obj.type}" class:active>
 			{#if step_obj.text != ""}	
-			<Text sortedColumn={sortedColumn} copy={step_obj.text}  type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
+			<Text copy={step_obj.text}  type={step_obj.type} time={step_obj.time} add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"} />
 			{/if}
 		</div>
 		{/each}
 	</Scrolly>
 
 </section>
+</div>
+<div class="methods">
+	<div class="methods_container">
+	<h2>Methodology</h2>
+	<div>
+		{copy.Methodology}
+	</div>
+</div>
 </div>
 
 <style>
@@ -326,8 +344,9 @@
 		width: 100%;
 		padding: 0 0px;
 		height: 100vh;
-		transition: background 0ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		transition: opacity 200ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		opacity: 0;
 	}
 	.visualContainer.reduceMotion-true, .visualContainer.reduceMotion-true * {
 		transition: none !important;
@@ -349,6 +368,16 @@
 		font-weight: bold;
 		font-family: CozetteVector, Courier, monospace;
 		z-index: 99999;
+	}
+	@media screen and (max-width: 600px) {
+		.title_container {
+			bottom: 60vh;
+		}
+	}
+	@media screen and (max-width: 500px) {
+		.title_container {
+			bottom: 77vh;
+		}
 	}
 	.title_container.title_container h1 {
 		font-size: 2em;
@@ -410,21 +439,35 @@
 		top: 0px;
 		width: 100%;
 		height: 100vh;
-		opacity: 0;
-		transition: opacity 300ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);
 	}
-	.scene_wrapper.loadGraphic {
+	.visualContainer.loadGraphic {
 		opacity: 1;
 	}
 	.reduceMotion-true .zoomContainer {
 		transition: none !important;
 	}
 
-	#sortedColumn {
-		position: absolute;
-		left: 10px;
-		top: 10px;
+	.methods {
+		background: #a35c9e;
+		margin-top: -30px;
+		padding: 10px 0 100px;
 	}
-
+	.methods .methods_container {
+		max-width: 620px;
+		margin: 0 auto;
+		padding: 0 10px;
+		box-sizing: border-box;
+	}
+	.methods .methods_container h2 {
+		font-family: CozetteVector, Courier, monospace;
+		font-size: var(--20px);
+		color: #f2d3ec;
+	}
+	.methods .methods_container div {
+		font-size: var(--14px);
+		line-height: var(--22px);
+		color: #4d1c44;
+		font-family: var(--sans);
+		color: #f2d3ec;
+	}
 </style>

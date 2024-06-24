@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	export let copy, add, time, age, type, firstyear, sortedColumn;
+	export let copy, add, time, age, type, firstyear;
 	function convertToHTML(text) {
     let finalText = [];
     if (text != undefined) {
@@ -15,7 +15,7 @@
 
             if (line.indexOf("IMAGE|") != -1) {
                 // line = '<div class="imageContainer"><img class="desktopImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '.png"/><img class="mobileImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '_mobile.png"/></div>';
-                 line = '<div class="imageContainer"><img class="desktopImage" src="assets/scifi/' + line.replace("IMAGE|", "").replace(/(\r\n|\n|\r)/gm, "") + '.png"/>';
+                 line = '<div class="imageContainer"><img class="desktopImage" alt="' + line.split("|")[2] + '" src="assets/scifi/' + line.split("|")[1] + '.png"/>';
             }
 
             if (line.indexOf(">>") != -1) {
