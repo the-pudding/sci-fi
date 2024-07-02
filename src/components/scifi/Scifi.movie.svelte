@@ -7,6 +7,8 @@
 
 	let shown = "";
 	let hl = "";
+	let marginbottom = 0;
+
 
 	let currentPos = position.x+position.y+position.speed;
 	function toggleTooltip() {
@@ -55,7 +57,7 @@ background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 <style>
 	.movie {
 		position: absolute;
-		border: 1.5px solid rgba(0,0,0,0.2);
+		border: 1px solid rgba(0,0,0,0.2);
 		box-sizing: border-box;
 		transition-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190); /* easeInCubic */
 		font-size: 8px;

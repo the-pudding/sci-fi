@@ -5,7 +5,7 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, progress, sceneRatio, prefersReducedMotion, hl_movie_index, noAnimation;
+	export let decade, movies, positions, sortedColumn, value, barHeight, bottomPadding, viewType, decadesShown, sceneNum, progress, sceneRatio, prefersReducedMotion, hl_movie_index, noAnimation, h;
 	let opacity = 0;
 	let duration = 500; // Duration of the transition in milliseconds
 
@@ -44,9 +44,9 @@
 </script>
 
 <div class="decade-container">
-	<h2 style="opacity: {opacity*.5};">{decade}</h2>
+	<h2 style="opacity: {opacity*.5};">{decade}s</h2>
 	{#if sortedColumn != "top200"}
-		<h3 style="opacity: {opacity}; bottom: {barHeight + 60}px;" transition:slide>{roundedDatapoint}%</h3>
+		<h3 style="opacity: {opacity}; bottom: {barHeight + h/14}px;" transition:slide>{roundedDatapoint}%</h3>
 	{/if}
 	<div class="movie-container" style="opacity: {opacity};">
 		{#each movies as movie}
@@ -99,7 +99,7 @@
 
 	.decade-container h3 {
 		position: absolute;
-		left: 0;
+		left: 5%;
 		width: 100%;
 		text-align: center;
 		font-size: 1.3em;

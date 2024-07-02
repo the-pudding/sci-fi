@@ -27,7 +27,8 @@
 		background: #e9abff;
 	}
 	.wordmark {
-		max-width: 10em;
+		width: 70%;
+		max-width: 20em;
 		margin: 0 auto;
 		padding: 1em 0;
 	}
@@ -41,7 +42,9 @@
 	.wordmark a:hover {
 		background-color: transparent;
 	}
-	
+	header .wordmark svg {
+		width: 100%;
+	}
 	header .wordmark svg path {
 		fill: black !important;
 	}

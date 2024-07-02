@@ -1,263 +1,294 @@
 <script>
-	import { onMount } from 'svelte';
-	import { fade, slide, fly } from 'svelte/transition';
-	import Scrolly from "$components/helpers/Scrolly.svelte";
-	import Decade from "$components/scifi/Scifi.decade.svelte";
-	import Scene from "$components/scifi/Scifi.scene.svelte";
-	import Text from "$components/scifi/Scifi.text.svelte";
-	import Toggle from "$components/helpers/Toggle.svelte";
-	export let copy;
-	import movies from "$data/movies.json";
-	import { groupByDecade, sortByAttributes, getContrastingColors, options } from '$components/helpers/helpers.js';
-	const decades = groupByDecade(movies);
+  import { onMount, onDestroy } from 'svelte';
+  import { fade, slide, fly } from 'svelte/transition';
+  import Scrolly from "$components/helpers/Scrolly.svelte";
+  import Decade from "$components/scifi/Scifi.decade.svelte";
+  import Scene from "$components/scifi/Scifi.scene.svelte";
+  import Text from "$components/scifi/Scifi.text.svelte";
+  import Toggle from "$components/helpers/Toggle.svelte";
+  export let copy;
+  import movies from "$data/movies.json";
+  import { groupByDecade, sortByAttributes, getContrastingColors, options } from '$components/helpers/helpers.js';
+  const decades = groupByDecade(movies);
 
-	let h = 1;
-	let w = 1;
-	let catLen;
-	let value;
-	let titleOn = "title";
-	let chartTitleLoc_y = 50;
-	let prefersReducedMotion = false;
-	let noAnimation = false;
-	let instantAnimation = true;
+  let h = 1;
+  let w = 1;
+  let catLen;
+  let value;
+  let titleOn = "title";
+  let chartTitleLoc_y = 50;
+  let prefersReducedMotion = false;
+  let noAnimation = false;
+  let instantAnimation = true;
 
-	let zoomSpeed = 3400;
-	let loadGraphic = false;
-	let hl_movie_index = null;
-	let stepCount = copy.timeline.length; 
+  let zoomSpeed = 3400;
+  let loadGraphic = false;
+  let hl_movie_index = null;
+  let stepCount = copy.timeline.length; 
 
-	const colorLookupEra = {
-		"future": "#fb04d3",
-		"present": "#9d1fa1",
-		"past": "#6d1170",
-		"multiple/other": "#5d3769"
-	};
-	const colorLookup = {
-		"yes": "#ff1cce",
-		"somewhat": "#bd1398",
-		"no": "#5d3769"
-	};
-	const colorLookupNumber = {
-		1: "#ff1cce",
-		0.5: "#bd1398",
-		0: "#5d3769"
-	};
-	let colors = ["#fb04d3","#9d1fa1","#6d1170","#5d3769"];
-	let loaded = false;
-	let decadesShown;
-	let objectSize = { width: 24, height: 14 };
-	let viewType = "zoom1950";
-	let sceneNum = 0;
-	let prev_viewType;
-	let prev_sceneNum;
-	let progress = 0;
-	let sceneRatio = 0.4;
+  const colorLookupEra = {
+    "future": "#fb04d3",
+    "present": "#9d1fa1",
+    "past": "#6d1170",
+    "multiple/other": "#5d3769"
+  };
+  const colorLookup = {
+    "yes": "#ff1cce",
+    "somewhat": "#bd1398",
+    "no": "#5d3769"
+  };
+  const colorLookupNumber = {
+    1: "#ff1cce",
+    0.5: "#bd1398",
+    0: "#5d3769"
+  };
+  let colors = ["#fb04d3","#9d1fa1","#6d1170","#5d3769"];
+  let loaded = false;
+  let decadesShown;
+  let objectSize = { width: 24, height: 14 };
+  let viewType = "zoom1950";
+  let sceneNum = 0;
+  let prev_viewType;
+  let prev_sceneNum;
+  let progress = 0;
+  let sceneRatio = 0.4;
 
-	let sceneMax = 4.3;
-	let translate = {x: w, y: 0, z: 8};
+  let sceneMax = 4.3;
+  let translate = {x: w, y: 0, z: 8};
 
+  let sortedColumn = "Social Issues";
+  let positions = {};
+  let bottomPadding = 90;
+  let barHeight = 50;
 
-	let sortedColumn = "Social Issues";
-	let positions = {};
-	let bottomPadding = 90;
-	let barHeight = 50;
+  function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
 
-	function calculatePositions() {
-    	// Sort the movies by the specified attributes and group by decade
-		const objects = sortByAttributes([...movies], sortedColumn, "decade");
-		const uniqueDecades = [...new Set(objects.map(obj => obj.decade))];
-		const decadeCount = uniqueDecades.length;
+  function calculatePositions() {
+    // Sort the movies by the specified attributes and group by decade
+    const objects = sortByAttributes([...movies], sortedColumn, "decade");
+    const uniqueDecades = [...new Set(objects.map(obj => obj.decade))];
+    const decadeCount = uniqueDecades.length;
 
-   		// Calculate effective container dimensions
-		const effectiveContainerWidth = w;
-		const effectiveContainerHeight = h;
-		// Calculate the number of elements per row based on screen aspect ratio
-	    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
-	    // sceneMax = 4 + (h/(w*0.8));
-    	// Calculate object sizes to ensure 200 elements per decade fit
-	    const elementsPerDecade = 200;
-	    const spacePerDecade = effectiveContainerWidth / decadeCount;
-	    const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
-	    objectSize.width = objectWidth;
-	    objectSize.height = objectWidth * 1.4;
+    // Calculate effective container dimensions
+    const effectiveContainerWidth = w;
+    const effectiveContainerHeight = h;
+    // Calculate the number of elements per row based on screen aspect ratio
+    const aspectRatio = w / h;  // Using width-to-height ratio to ensure correct behavior
+    // sceneMax = 4 + (h/(w*0.8));
+    // Calculate object sizes to ensure 200 elements per decade fit
+    const elementsPerDecade = 200;
+    const spacePerDecade = effectiveContainerWidth / decadeCount;
+    const objectWidth = Math.sqrt(spacePerDecade * effectiveContainerHeight / elementsPerDecade) / 1.8;
+    objectSize.width = objectWidth;
+    objectSize.height = objectWidth * 1.4;
 
+    if (viewType == "zoom1950v2" && aspectRatio < 1.2) {
+      objectSize.width = objectWidth * (2.4-aspectRatio);
+      objectSize.height = objectWidth * (3.4-aspectRatio);
+    }
 
-	    if (viewType == "zoom1950v2" && aspectRatio < 1.2) {
-	    	objectSize.width = objectWidth * (2.4-aspectRatio);
-	    	objectSize.height = objectWidth * (3.4-aspectRatio);
-	    }
+    // Assign unique colors to each unique value of the sorted column
+    const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
 
-    	// Assign unique colors to each unique value of the sorted column
-	    const uniqueValues = [...new Set(objects.map(obj => obj[sortedColumn]))];
+    // Group objects by decade
+    const groupedByDecade = objects.reduce((group, obj) => {
+      group[obj.decade] = group[obj.decade] || [];
+      group[obj.decade].push(obj);
+      return group;
+    }, {});
 
-    	// Group objects by decade
-	    const groupedByDecade = objects.reduce((group, obj) => {
-	    	group[obj.decade] = group[obj.decade] || [];
-	    	group[obj.decade].push(obj);
-	    	return group;
-	    }, {});
+    const positions = {};
 
-	    const positions = {};
+    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
+    let elementsPerRow = 10;
 
-	    
-	    // const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
-	    let elementsPerRow = 10;
+    if (aspectRatio < 0.9 && viewType == "all") {
+      elementsPerRow = 5;
+    } else if (aspectRatio < 1.4) {
+      elementsPerRow = 8;
+    }
 
-	    if (aspectRatio < 0.9 && viewType == "all") {
-	    	elementsPerRow = 5;
-	    } else if (aspectRatio < 1.4) {
-	    	elementsPerRow = 8;
-	    }
+    if (viewType == "zoom1950v2") {
+      elementsPerRow = 10;
+      if (aspectRatio > 2.1) {
+        elementsPerRow = 20;
+      }
+    }
 
-	    if (viewType == "zoom1950v2") {
-	    	elementsPerRow = 10;
-	    	if (aspectRatio > 2.1) {
-	    		elementsPerRow = 20;
-	    	}
-	    }
+    const elementsPerCol = 200 / elementsPerRow;
+    barHeight = (elementsPerCol * objectSize.height);
+    if (elementsPerRow == 5) {
+      barHeight = barHeight*.95
+    }
 
-	    const elementsPerCol = 200 / elementsPerRow;
-	    barHeight = (elementsPerCol * objectSize.height);
-	    if (elementsPerRow == 5) {
-	    	barHeight = barHeight*.95
-	    }
+    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
+    const sceneWidth = barHeight * sceneRatio * 8
+    let multiplier = w / sceneWidth;
+    
+    titleOn = "";
+    if (viewType == "zoom1950" && sceneNum < 2) {
+      titleOn = "title";
+    }
+    if (viewType == "zoom2030" && sceneNum > 2) {
+      titleOn = "end";
+    }
+    // reset translate
+    translate = {x: 0, y: 0, z: 1}; 
+    if (viewType != "all") {
+      translate.y = -(barHeight*translate.z) + barHeight;
+      // if (aspectRatio < 0.9) {
+      //  translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
+      // }
+      translate.x = w / 2 - spacePerDecade/2;
+    }
+    chartTitleLoc_y = barHeight / h * 100 + 26*translate.z;
+    if (chartTitleLoc_y > 85) {
+      chartTitleLoc_y = 85;
+    }
+    // Iterate through each decade to calculate positions
+    uniqueDecades.forEach((decade, decadeIndex) => {
+      const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
+      let xPos = 0;
+      let yPos = effectiveContainerHeight - objectSize.height - bottomPadding;
 
-	    const leftPadding = (spacePerDecade - (elementsPerRow*(objectSize.width - 1.5) )) / 2;
-	    const sceneWidth = barHeight * sceneRatio * 8
-	    let multiplier = w / sceneWidth;
-	    
-	    titleOn = "";
-	    if (viewType == "zoom1950" && sceneNum < 2) {
-	    	titleOn = "title";
-	    }
-	    if (viewType == "zoom2030" && sceneNum > 2) {
-	    	titleOn = "end";
-	    }
-	    // reset translate
-	    translate = {x: 0, y: 0, z: 1}; 
-	    if (viewType != "all") {
-	    	translate.y = -(barHeight*translate.z) + barHeight;
-	    	// if (aspectRatio < 0.9) {
-	    	// 	translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
-	    	// }
-	    	translate.x = w / 2 - spacePerDecade/2;
-	    }
-	    chartTitleLoc_y = barHeight / h * 100 + 26*translate.z;
-	    if (chartTitleLoc_y > 85) {
-	    	chartTitleLoc_y = 85;
-	    }
-	    // Iterate through each decade to calculate positions
-	    uniqueDecades.forEach((decade, decadeIndex) => {
-	    	const decadeObjects = sortByAttributes(groupedByDecade[decade], sortedColumn, "decade");
-	    	let xPos = 0;
-	    	let yPos = effectiveContainerHeight - objectSize.height - bottomPadding;
+      decadeObjects.forEach((obj, index) => {
+        // If the index is a multiple of elementsPerRow, move to next row
+        if (index % elementsPerRow === 0 && index > 0) {
+          xPos = 0;
+          yPos -= objectSize.height - 1;
+        }
 
-	    	decadeObjects.forEach((obj, index) => {
-            // If the index is a multiple of elementsPerRow, move to next row
-	    		if (index % elementsPerRow === 0 && index > 0) {
-	    			xPos = 0;
-	    			yPos -= objectSize.height - 1;
-	    		}
+        const objIndex = obj.index;
 
-	    		const objIndex = obj.index;
+        // Calculate the actual positions within the relative container
+        const containerWidth = (w * 0.125) - 20; // 12.5% of the width minus some padding
+        let xRelativePos = (xPos / spacePerDecade) * 100 + (spacePerDecade - objectSize.width*elementsPerRow)/spacePerDecade*50;
+        let yRelativePos = (yPos / effectiveContainerHeight) * 100;
+        let nudgePixels = effectiveContainerHeight * 0.004;
+        if (obj[sortedColumn] > 0 || obj[sortedColumn] == "future") {
+          if (w > 600) {
+            yRelativePos = yRelativePos -(nudgePixels / effectiveContainerHeight) * 100;
+            xRelativePos = xRelativePos + (nudgePixels / spacePerDecade) * 100;              
+          } else {
+            yRelativePos = yRelativePos -(nudgePixels / effectiveContainerHeight) * 100;
+            xRelativePos = xRelativePos + (nudgePixels / spacePerDecade) * 30;
+          }
+        }
+        let movie_colors = colorLookupNumber;
+        colors = colorLookup;
+        if (sortedColumn.indexOf("Era") != -1) {
+          movie_colors = colorLookupEra;
+          colors = colorLookupEra;
+        }
+        let speed = 0;
+        if (!prefersReducedMotion || !noAnimation) {
+          speed = Math.random() * 1200 + 100;
+        }
+        positions[objIndex] = {
+          x: `${xRelativePos}%`,
+          y: `${yRelativePos}%`,
+          width: `${objectSize.width + 1}px`,
+          height: `${objectSize.height}px`,
+          speed: speed,
+          color: movie_colors[obj[sortedColumn]] // Assign color based on sortedColumn value
+        };
 
-            // Calculate the actual positions within the relative container
-            const containerWidth = (w * 0.125) - 20; // 12.5% of the width minus some padding
-            const xRelativePos = (xPos / spacePerDecade) * 100 + (spacePerDecade - objectSize.width*elementsPerRow)/spacePerDecade*50;
-            const yRelativePos = (yPos / effectiveContainerHeight) * 100;
-            let movie_colors = colorLookupNumber;
-            colors = colorLookup;
-            if (sortedColumn.indexOf("Era") != -1) {
-            	movie_colors = colorLookupEra;
-            	colors = colorLookupEra;
-            }
-            let speed = 0;
-            if (!prefersReducedMotion || !noAnimation) {
-            	speed = Math.random() * 1200 + 100;
-            }
-            positions[objIndex] = {
-            	x: `${xRelativePos}%`,
-            	y: `${yRelativePos}%`,
-            	width: `${objectSize.width + 1}px`,
-            	height: `${objectSize.height}px`,
-            	speed: speed,
-                color: movie_colors[obj[sortedColumn]] // Assign color based on sortedColumn value
-            };
+        // Move to the next position in the row
+        xPos += objectSize.width;
+      });
+    });
+    
+    return positions;
+  }
 
-            // Move to the next position in the row
-            xPos += objectSize.width;
-        });
-	    });
-	    
-	    return positions;
-	}
+  function dispatchResize() {
+    instantAnimation = true;
+    positions = calculatePositions();
+  }
 
+  function handleScroll() {
+    positions = calculatePositions();
+  }
 
-	function dispatchResize() {
-		instantAnimation = true;
-		positions = calculatePositions();
-	}
+  const debouncedHandleScroll = debounce(handleScroll, 100);
 
+  $: {
+    w, h, progress, titleOn, barHeight;
+    value = value === undefined ? 0 : value;
+    decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
+    sortedColumn = copy.timeline[value]["variable"];
+    hl_movie_index = copy.timeline[value]["movie_hl"];
+    viewType = copy.timeline[value]["view"] === undefined ? "all" : copy.timeline[value]["view"];
+    sceneNum = copy.timeline[value]["sceneNum"] === undefined ? -1 : Number(copy.timeline[value]["sceneNum"]);
 
-	$: {
-		w, h, progress, titleOn, barHeight;
-		value = value === undefined ? 0 : value;
-		decadesShown = copy.timeline[value].decades === undefined ? "(1950,1960,1970,1980,1990,2000,2010,2020)" : copy.timeline[value].decades;
-		sortedColumn = copy.timeline[value]["variable"];
-		hl_movie_index = copy.timeline[value]["movie_hl"];
-		viewType = copy.timeline[value]["view"] === undefined ? "all" : copy.timeline[value]["view"];
-		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? 0 : Number(copy.timeline[value]["sceneNum"]);
+    if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
+      positions = calculatePositions();
+      prev_viewType = viewType;
+      prev_sceneNum = sceneNum;  
+      loaded = true;
+      positions = calculatePositions();
+    } 
+    if (progress != 0) {
+      instantAnimation = false;
+    }
+    if (copy.timeline[value].zoomSpeed) {
+      zoomSpeed = copy.timeline[value].zoomSpeed;
+    } else {
+      zoomSpeed = 3400;
+    }
+    if (h > 1 && w > 1) {
+      loadGraphic = "loadGraphic";
+    }
+    // if (copy.timeline[value]["sceneNum"] === undefined) {
+    //  // progress = 0;
+    // }
+  }
 
-		if (prev_viewType != viewType || prev_sceneNum != sceneNum || !loaded || (viewType != "zoom1950" && viewType != "zoom2020" && viewType != "zoom2030") ) {
-			positions = calculatePositions();
-			prev_viewType = viewType;
-			prev_sceneNum = sceneNum;	
-			loaded = true;
-			positions = calculatePositions();
-		} 
-		if (progress != 0) {
-			instantAnimation = false;
-		}
-		if (copy.timeline[value].zoomSpeed) {
-			zoomSpeed = copy.timeline[value].zoomSpeed;
-		} else {
-			zoomSpeed = 3400;
-		}
-		if (h > 1 && w > 1) {
-			loadGraphic = "loadGraphic";
-		}
-		if (copy.timeline[value]["sceneNum"] === undefined) {
-			progress = 0;
-		}
-	}
+  onMount(() => {
+    positions = calculatePositions();
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-	onMount(() => {
-		positions = calculatePositions();
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    function updatePreference(e) {
+      prefersReducedMotion = e.matches;
+    }
 
-		function updatePreference(e) {
-			prefersReducedMotion = e.matches;
-		}
+    // Add listener
+    mediaQuery.addListener(updatePreference);
 
-        // Add listener
-		mediaQuery.addListener(updatePreference);
+    // Set initial value
+    prefersReducedMotion = mediaQuery.matches;
+    // Cleanup function
+    if (w < 500) {
+      prefersReducedMotion = true;
+      noAnimation = true;
+    }
+    return () => {
+      mediaQuery.removeListener(updatePreference);
+    };
+  });
 
-        // Set initial value
-		prefersReducedMotion = mediaQuery.matches;
-        // Cleanup function
-        if (w < 500) {
-			prefersReducedMotion = true;
-			noAnimation = true;
-		}
-		return () => {
-			mediaQuery.removeListener(updatePreference);
-		};
-	});
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', debouncedHandleScroll);
+    }
+  });
+
+  onDestroy(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('scroll', debouncedHandleScroll);
+    }
+  });
 </script>
 <svelte:window on:resize={dispatchResize}></svelte:window>
 <!-- <div class="debug">
 	{value}<br>
-	{copy.timeline[value]["sceneNum"]}<br>
+	{sceneNum}<br>
 	{progress}
 </div> -->
 <div class="outsideContainer">
@@ -279,9 +310,9 @@
 			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 			">
 			{#each Object.keys(decades) as decade}
-			<Decade {noAnimation} decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade {h} {noAnimation} decade={decade} movies={decades[decade]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 			{/each}
-			<Decade {noAnimation} decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
+			<Decade {h} {noAnimation} decade={2030} movies={[]} positions={positions} sortedColumn={sortedColumn} {value} {barHeight} {bottomPadding} {viewType} {decadesShown} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {hl_movie_index}/>
 		</div>
 		<div class="scene_wrapper">
 			<Scene decade={1950} {w} {h} {value} {barHeight} {bottomPadding} {viewType} {sceneMax} {sceneNum} {progress} {sceneRatio} {prefersReducedMotion} {stepCount} nextDecade=""/>
@@ -296,6 +327,9 @@
 			{#if w > 500}
 			<Toggle label="Animation" bind:value={noAnimation} options={ [{value: false, text: "On"}, {value: true, text: "Off"}] }/>
 			{/if}
+		</div>
+		<div class="videoTeaser" transition:fade>
+			Don't feel like scrolling? <a href="https://www.youtube.com/@thepudding">Watch the video instead!</a>
 		</div>
 		{/if}
 
@@ -319,11 +353,11 @@
 </div>
 <div class="methods">
 	<div class="methods_container">
-	<h2>Methodology</h2>
-	<div>
-		{copy.Methodology}
+		<h2>Methodology</h2>
+		<div>
+			{copy.Methodology}
+		</div>
 	</div>
-</div>
 </div>
 
 <style>
@@ -469,5 +503,24 @@
 		color: #4d1c44;
 		font-family: var(--sans);
 		color: #f2d3ec;
+	}
+	.videoTeaser {
+		position: fixed;
+		color: white;
+		bottom: 20px;
+		left: 50%;
+		transform: translateX(-50%);
+		text-align: center;
+		background: #000;
+		padding: 20px;
+		max-width: 500px;
+		width: 90%;
+		z-index: 100000;
+	}
+	.videoTeaser a {
+		color: #fb04d3;
+	}
+	.videoTeaser a:hover {
+		opacity: 0.9;
 	}
 </style>
