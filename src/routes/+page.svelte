@@ -14,7 +14,8 @@
 		"https://pudding.cool/assets/fonts/tiempos/TiemposTextWeb-Regular.woff2",
 		"https://pudding.cool/assets/fonts/tiempos/TiemposTextWeb-Bold.woff2",
 		"https://pudding.cool/assets/fonts/atlas/AtlasGrotesk-Regular-Web.woff2",
-		"https://pudding.cool/assets/fonts/atlas/AtlasGrotesk-Bold-Web.woff2"
+		"https://pudding.cool/assets/fonts/atlas/AtlasGrotesk-Bold-Web.woff2",
+		"https://pudding.cool/assets/fonts/cozette/CozetteVector.woff2"
 	];
 
 	const { title, description, url, keywords } = copy;

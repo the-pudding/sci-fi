@@ -11,7 +11,7 @@
 	 * optional params with defaults
 	 * <Scrolly root={null} top={0} bottom={0} increments={100}>
 	 */
-	import { onMount, onDestroy } from "svelte";
+	import { onMount, beforeUpdate, afterUpdate } from "svelte";
 
 	export let root = null;
 	export let top = 0;
@@ -27,6 +27,7 @@
 	let intersectionObservers = [];
 	let container;
 	let topIntersectingNode;
+	let intervalId;
 
 	$: top, bottom, update();
 
@@ -97,13 +98,20 @@
 		if (typeof window !== 'undefined') {
 			window.addEventListener('scroll', handleScroll);
 		}
+
+		// Set up interval to run handleScroll every half second
+		intervalId = setInterval(handleScroll, 500);
 	});
 
-	onDestroy(() => {
-		if (typeof window !== 'undefined') {
-			window.removeEventListener('scroll', handleScroll);
+	beforeUpdate(() => {
+		if (intervalId) {
+			clearInterval(intervalId);
 		}
-		intersectionObservers.forEach(io => io.disconnect());
+	});
+
+	afterUpdate(() => {
+		// Reset the interval after component updates
+		intervalId = setInterval(handleScroll, 500);
 	});
 </script>
 

@@ -485,6 +485,7 @@
 		background: #a35c9e;
 		margin-top: -30px;
 		padding: 10px 0 100px;
+		z-index: 999999;
 	}
 	.methods .methods_container {
 		max-width: 620px;
@@ -515,7 +516,7 @@
 		padding: 20px;
 		max-width: 500px;
 		width: 90%;
-		z-index: 100000;
+		z-index: 999;
 	}
 	.videoTeaser a {
 		color: #fb04d3;

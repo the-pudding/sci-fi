@@ -28,7 +28,7 @@
 	}
 	.wordmark {
 		width: 70%;
-		max-width: 20em;
+		max-width: 13em;
 		margin: 0 auto;
 		padding: 1em 0;
 	}
