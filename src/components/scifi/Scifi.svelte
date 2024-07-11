@@ -465,7 +465,7 @@
 					{/if}
 				</div>
 				<div class="videoTeaser" transition:fade>
-					Don't feel like scrolling? <a href="https://youtu.be/54CF0jZbC84"
+					Don't feel like scrolling? <a href="https://youtu.be/nRQ2vMpw-n8"
 						>Watch the video instead!</a
 					>
 				</div>
