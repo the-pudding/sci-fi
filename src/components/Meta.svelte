@@ -1,6 +1,7 @@
 <script>
 	export let title = "Who killed the world?";
-	export let description = "Explore science fiction worlds from the last few decades – and what these fictional settings tell us about ourselves";
+	export let description =
+		"Explore science fiction worlds from the last few decades – and what these fictional settings tell us about ourselves";
 	export let url = "https://pudding.cool/2024/07/scifi";
 	export let keywords = "";
 	export let preloadFont = [];
@@ -22,7 +23,7 @@
 	<meta property="og:image" content="{url}/assets/social-facebook.jpg" />
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="600" />
+	<meta property="og:image:height" content="630" />
 
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="https://pudding.cool" />
