@@ -93,7 +93,8 @@
 	}
 	@media screen and (max-width: 440px) {
 		.decade-container h2 {
-			font-size: 1.1em;
+			font-size: 1em;
+			bottom: 45px;
 		}
 	}
 
@@ -114,6 +115,7 @@
 	@media screen and (max-width: 440px) {
 		.decade-container h3 {
 			font-size: 1.1em;
+			margin-bottom: 25px;
 		}
 	}
 </style>
