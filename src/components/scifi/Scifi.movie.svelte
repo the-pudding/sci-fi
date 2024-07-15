@@ -1,5 +1,5 @@
 <script>
-	export let data, position, sortedColumn, decade, viewType, hl_movie_index;
+	export let data, position, sortedColumn, hl_movie_index;
 
 	const year = data["first_year"];
 	let addClass = "";
@@ -9,12 +9,11 @@
 	let hl = "";
 	let marginbottom = 0;
 
-
 	let currentPos = position.x+position.y+position.speed;
 	function toggleTooltip() {
 		shown = true;
 		tooltip_orientation = "left";
-		if (decade > 1990 || viewType=="zoom1950v2") {
+		if (position.decade > 1990) {
 			tooltip_orientation = "right";
 		}
 	}
@@ -23,13 +22,13 @@
 	}
 
 	$: {
-		viewType, tooltip_orientation, shown;
+		tooltip_orientation, shown;
 		if (position.x+position.y+position.speed != currentPos) {
 			currentPos = position.x+position.y+position.speed
 			hideTooltip();
 		}
-		hl = "";
-		if (data.index == hl_movie_index) {
+		hl = ""
+		if (data.index == position.hl) {
 			hl = "hl_movie";
 		}
 	}
@@ -42,17 +41,16 @@ top: {position.y};
 width: {position.width};
 height: {position.height};
 background: {position.color};
-transition: left {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000),
-top {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000), 
-bottom {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000); 
-background {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
+transition: all {position.speed}ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 " on:mouseenter|preventDefault={toggleTooltip} on:mouseleave|preventDefault={hideTooltip}>
+{#if shown}
 <div class='tooltip {tooltip_orientation} {shown}'>
 	<div class="film_title">{data["title_year"]}</div>
 	{#if sortedColumn != "top200"}
 	<div class="data_point">{data[sortedColumn + "_exp"]}</div>
 	{/if}
 </div>
+{/if}
 </div>
 <style>
 	.movie {

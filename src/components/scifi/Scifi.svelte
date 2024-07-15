@@ -54,7 +54,7 @@
 	let viewType = "zoom1950";
 	let sceneNum = 0;
 	let prev_viewType;
-	let prev_sceneNum;
+	let prev_value;
 	let progress = 0;
 	let sceneRatio = 0.4;
 
@@ -90,8 +90,8 @@
 		const elementsPerDecade = 200;
 		const spacePerDecade = effectiveContainerWidth / decadeCount;
 		const objectWidth =
-			Math.sqrt(
-				(spacePerDecade * effectiveContainerHeight) / elementsPerDecade
+		Math.sqrt(
+			(spacePerDecade * effectiveContainerHeight) / elementsPerDecade
 			) / 1.8;
 		objectSize.width = objectWidth;
 		objectSize.height = objectWidth * 1.4;
@@ -115,13 +115,13 @@
 
 		// const elementsPerRow = Math.max(1, Math.floor(4 * aspectRatio)) + 2; // Adjust the multiplier as needed
 		let elementsPerRow = 10;
-
-		if (aspectRatio < 0.9 && viewType == "all") {
+		if (aspectRatio < 0.9 && viewType === "all") {
 			elementsPerRow = 5;
 		} else if (aspectRatio < 1.4) {
 			elementsPerRow = 8;
+		} else if (viewType === "zoom1950v2" && aspectRatio > 2.1) {
+			elementsPerRow = 20;
 		}
-
 		if (viewType == "zoom1950v2") {
 			elementsPerRow = 10;
 			if (aspectRatio > 2.1) {
@@ -136,7 +136,7 @@
 		}
 
 		const leftPadding =
-			(spacePerDecade - elementsPerRow * (objectSize.width - 1.5)) / 2;
+		(spacePerDecade - elementsPerRow * (objectSize.width - 1.5)) / 2;
 		const sceneWidth = barHeight * sceneRatio * 8;
 		let multiplier = w / sceneWidth;
 
@@ -151,9 +151,6 @@
 		translate = { x: 0, y: 0, z: 1 };
 		if (viewType != "all") {
 			translate.y = -(barHeight * translate.z) + barHeight;
-			// if (aspectRatio < 0.9) {
-			//  translate.y = -(barHeight/2) + barHeight * 1.5 * aspectRatio;
-			// }
 			translate.x = w / 2 - spacePerDecade / 2;
 		}
 		chartTitleLoc_y = (barHeight / h) * 100 + 26 * translate.z;
@@ -166,7 +163,7 @@
 				groupedByDecade[decade],
 				sortedColumn,
 				"decade"
-			);
+				);
 			let xPos = 0;
 			let yPos = effectiveContainerHeight - objectSize.height - bottomPadding;
 
@@ -182,20 +179,20 @@
 				// Calculate the actual positions within the relative container
 				const containerWidth = w * 0.125 - 20; // 12.5% of the width minus some padding
 				let xRelativePos =
-					(xPos / spacePerDecade) * 100 +
-					((spacePerDecade - objectSize.width * elementsPerRow) /
-						spacePerDecade) *
-						50;
+				(xPos / spacePerDecade) * 100 +
+				((spacePerDecade - objectSize.width * elementsPerRow) /
+					spacePerDecade) *
+				50;
 				let yRelativePos = (yPos / effectiveContainerHeight) * 100;
 				let nudgePixels = effectiveContainerHeight * 0.004;
 				if (obj[sortedColumn] > 0 || obj[sortedColumn] == "future") {
 					if (w > 600) {
 						yRelativePos =
-							yRelativePos - (nudgePixels / effectiveContainerHeight) * 100;
+						yRelativePos - (nudgePixels / effectiveContainerHeight) * 100;
 						xRelativePos = xRelativePos + (nudgePixels / spacePerDecade) * 100;
 					} else {
 						yRelativePos =
-							yRelativePos - (nudgePixels / effectiveContainerHeight) * 100;
+						yRelativePos - (nudgePixels / effectiveContainerHeight) * 100;
 						xRelativePos = xRelativePos + (nudgePixels / spacePerDecade) * 30;
 					}
 				}
@@ -207,7 +204,7 @@
 				}
 				let speed = 0;
 				if (!prefersReducedMotion || !noAnimation) {
-					speed = Math.random() * 1200 + 100;
+					speed = (obj.index+xRelativePos)/1600 * 800 + 100;
 				}
 				positions[objIndex] = {
 					x: `${xRelativePos}%`,
@@ -215,6 +212,8 @@
 					width: `${objectSize.width + 1}px`,
 					height: `${objectSize.height}px`,
 					speed: speed,
+					hl: copy.timeline[value]["movie_hl"],
+					decade: obj.decade,
 					color: movie_colors[obj[sortedColumn]] // Assign color based on sortedColumn value
 				};
 
@@ -231,43 +230,31 @@
 		positions = calculatePositions();
 	}
 
-	function handleScroll() {
-		positions = calculatePositions();
-	}
+	// function handleScroll() {
+	// 	positions = calculatePositions();
+	// }
 
-	const debouncedHandleScroll = debounce(handleScroll, 100);
-
+	// const debouncedHandleScroll = debounce(handleScroll, 100);
+	let categories;
 	$: {
+
 		w, h, progress, titleOn, barHeight;
 		value = value === undefined ? 0 : value;
 		decadesShown =
-			copy.timeline[value].decades === undefined
-				? "(1950,1960,1970,1980,1990,2000,2010,2020)"
-				: copy.timeline[value].decades;
+		copy.timeline[value].decades === undefined
+		? "(1950,1960,1970,1980,1990,2000,2010,2020)"
+		: copy.timeline[value].decades;
 		sortedColumn = copy.timeline[value]["variable"];
-		hl_movie_index = copy.timeline[value]["movie_hl"];
 		viewType =
-			copy.timeline[value]["view"] === undefined
-				? "all"
-				: copy.timeline[value]["view"];
-		sceneNum =
-			copy.timeline[value]["sceneNum"] === undefined
-				? -1
-				: Number(copy.timeline[value]["sceneNum"]);
-
-		if (
-			prev_viewType != viewType ||
-			prev_sceneNum != sceneNum ||
-			!loaded ||
-			(viewType != "zoom1950" &&
-				viewType != "zoom2020" &&
-				viewType != "zoom2030")
-		) {
-			positions = calculatePositions();
-			prev_viewType = viewType;
-			prev_sceneNum = sceneNum;
+		copy.timeline[value]["view"] === undefined
+		? "all"
+		: copy.timeline[value]["view"];
+		sceneNum = copy.timeline[value]["sceneNum"] === undefined ? -1: Number(copy.timeline[value]["sceneNum"]);
+		if (prev_value != value || !loaded){
+			prev_value = value;
 			loaded = true;
 			positions = calculatePositions();
+			categories = copy.timeline[value].categories;
 		}
 		if (progress != 0) {
 			instantAnimation = false;
@@ -280,13 +267,10 @@
 		if (h > 1 && w > 1) {
 			loadGraphic = "loadGraphic";
 		}
-		// if (copy.timeline[value]["sceneNum"] === undefined) {
-		//  // progress = 0;
-		// }
 	}
 
 	onMount(() => {
-		positions = calculatePositions();
+
 		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 		function updatePreference(e) {
@@ -308,17 +292,17 @@
 		};
 	});
 
-	onMount(() => {
-		if (typeof window !== "undefined") {
-			window.addEventListener("scroll", debouncedHandleScroll);
-		}
-	});
+	// onMount(() => {
+	// 	if (typeof window !== "undefined") {
+	// 		window.addEventListener("scroll", debouncedHandleScroll);
+	// 	}
+	// });
 
-	onDestroy(() => {
-		if (typeof window !== "undefined") {
-			window.removeEventListener("scroll", debouncedHandleScroll);
-		}
-	});
+	// onDestroy(() => {
+	// 	if (typeof window !== "undefined") {
+	// 		window.removeEventListener("scroll", debouncedHandleScroll);
+	// 	}
+	// });
 </script>
 
 <svelte:window on:resize={dispatchResize} />
@@ -330,53 +314,53 @@
 <div class="outsideContainer">
 	<section id="scrolly">
 		<div
-			class="visualContainer {loadGraphic} {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}"
-			bind:clientWidth={w}
-			bind:clientHeight={h}
+		class="visualContainer {loadGraphic} {titleOn} reduceMotion-{prefersReducedMotion} reduceMotion-{noAnimation} reduceMotion-{instantAnimation}"
+		bind:clientWidth={w}
+		bind:clientHeight={h}
 		>
-			{#if viewType == "all" || viewType.indexOf("v2") != -1}
-				<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
-					<div class="legend_title">{copy.timeline[value].hed}</div>
-					<div class="legend_container">
-						{#each copy.timeline[value].categories as category, i}
-							<div
-								class="legendItem"
-								style="background: {colors[category.toLowerCase()]};"
-							>
-								{category}
-							</div>
-						{/each}
-					</div>
+		{#if viewType == "all" || viewType.indexOf("v2") != -1}
+		<div class="chartTitles" style="bottom: {chartTitleLoc_y}%;">
+			<div class="legend_title">{copy.timeline[value].hed}</div>
+			<div class="legend_container">
+				{#each categories as category, i}
+				<div
+				class="legendItem"
+				style="background: {colors[category.toLowerCase()]};"
+				>
+				{category}
 				</div>
-			{/if}
-			<div
-				class="zoomContainer {viewType}"
-				style="
-			transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});
-			transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
-			"
-			>
-				{#each Object.keys(decades) as decade}
-					<Decade
-						{h}
-						{noAnimation}
-						{decade}
-						movies={decades[decade]}
-						{positions}
-						{sortedColumn}
-						{value}
-						{barHeight}
-						{bottomPadding}
-						{viewType}
-						{decadesShown}
-						{sceneNum}
-						{progress}
-						{sceneRatio}
-						{prefersReducedMotion}
-						{hl_movie_index}
-					/>
 				{/each}
-				<Decade
+		</div>
+	</div>
+	{/if}
+	<div
+	class="zoomContainer {viewType}"
+	style="
+	transform: perspective(0) translate3d({translate.x}px,{translate.y}px, 0) scale({translate.z});
+	transition: transform {0}ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	"
+	>
+	{#each Object.keys(decades) as decade}
+	<Decade
+	{h}
+	{noAnimation}
+	{decade}
+	movies={decades[decade]}
+	{positions}
+	{sortedColumn}
+	{value}
+	{barHeight}
+	{bottomPadding}
+	{viewType}
+	{decadesShown}
+	{sceneNum}
+	{progress}
+	{sceneRatio}
+	{prefersReducedMotion}
+	{hl_movie_index}
+	/>
+	{/each}
+				<!-- <Decade
 					{h}
 					{noAnimation}
 					decade={2030}
@@ -393,10 +377,10 @@
 					{sceneRatio}
 					{prefersReducedMotion}
 					{hl_movie_index}
-				/>
-			</div>
-			<div class="scene_wrapper">
-				<Scene
+					/> -->
+				</div>
+				<div class="scene_wrapper">
+					<Scene
 					decade={1950}
 					{w}
 					{h}
@@ -411,8 +395,8 @@
 					{prefersReducedMotion}
 					{stepCount}
 					nextDecade=""
-				/>
-				<Scene
+					/>
+					<Scene
 					decade={2020}
 					{w}
 					{h}
@@ -427,8 +411,8 @@
 					{prefersReducedMotion}
 					{stepCount}
 					nextDecade=""
-				/>
-				<Scene
+					/>
+					<Scene
 					decade={2030}
 					{w}
 					{h}
@@ -443,10 +427,10 @@
 					{prefersReducedMotion}
 					{stepCount}
 					nextDecade=""
-				/>
-			</div>
+					/>
+				</div>
 
-			{#if sceneNum == -1 && viewType == "zoom1950"}
+				{#if sceneNum == -1 && viewType == "zoom1950"}
 				<div class="title_container" transition:fade>
 					<h1>{copy.Hed}</h1>
 					<div class="byline">
@@ -454,224 +438,224 @@
 						>
 					</div>
 					{#if w > 500}
-						<Toggle
-							label="Animation"
-							bind:value={noAnimation}
-							options={[
-								{ value: false, text: "On" },
-								{ value: true, text: "Off" }
-							]}
+					<Toggle
+					label="Animation"
+					bind:value={noAnimation}
+					options={[
+						{ value: false, text: "On" },
+						{ value: true, text: "Off" }
+						]}
 						/>
+						{/if}
+					</div>
+					<div class="videoTeaser" transition:fade>
+						Don't feel like scrolling? <a href="https://youtu.be/nRQ2vMpw-n8"
+						>Watch the video instead!</a
+						>
+					</div>
 					{/if}
 				</div>
-				<div class="videoTeaser" transition:fade>
-					Don't feel like scrolling? <a href="https://youtu.be/nRQ2vMpw-n8"
-						>Watch the video instead!</a
-					>
-				</div>
-			{/if}
-		</div>
 
-		<Scrolly bind:value top={0} bind:progress>
-			{#each copy.timeline as step_obj, i}
-				{@const active = value === i}
-				{@const is_firstyear =
+				<Scrolly bind:value top={0} bind:progress>
+					{#each copy.timeline as step_obj, i}
+					{@const active = value === i}
+					{@const is_firstyear =
 					copy.timeline.findIndex((item) => item.time === step_obj.time) === i}
 
-				<div
+					<div
 					class="step {step_obj.addclass
-						? step_obj.addclass
-						: 'short_stage'} steptype_{step_obj.type}"
+					? step_obj.addclass
+					: 'short_stage'} steptype_{step_obj.type}"
 					class:active
-				>
+					>
 					{#if step_obj.text != ""}
-						<Text
-							copy={step_obj.text}
-							type={step_obj.type}
-							time={step_obj.time}
-							add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"}
-						/>
+					<Text
+					copy={step_obj.text}
+					type={step_obj.type}
+					time={step_obj.time}
+					add={step_obj.addclass === "longcopy" ? "longcopy" : "shortcopy"}
+					/>
 					{/if}
 				</div>
-			{/each}
-		</Scrolly>
-	</section>
-</div>
-<div class="methods">
-	<div class="methods_container">
-		<h2>Methodology</h2>
-		<div>
-			{copy.Methodology}
+				{/each}
+			</Scrolly>
+		</section>
+	</div>
+	<div class="methods">
+		<div class="methods_container">
+			<h2>Methodology</h2>
+			<div>
+				{copy.Methodology}
+			</div>
 		</div>
 	</div>
-</div>
 
-<style>
-	.debug {
-		position: fixed;
-		left: 0px;
-		top: 0px;
-		background: black;
-		color: white;
-		z-index: 99999999;
-	}
-	.visualContainer {
-		overflow: hidden;
-		position: sticky;
-		top: 0px;
-		left: 0px;
-		display: block;
-		width: 100%;
-		padding: 0 0px;
-		height: 100vh;
-		transition: opacity 200ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
-		transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-		opacity: 0;
-	}
-	.visualContainer.reduceMotion-true,
-	.visualContainer.reduceMotion-true * {
-		transition: none !important;
-	}
-	.visualContainer.title {
-		background: #e9abff;
-		font-family: CozetteVector, Courier, monospace;
-	}
-	.visualContainer.end {
-		background: #a35c9e;
-	}
-	.title_container {
-		position: absolute;
-		left: 0%;
-		width: 100%;
-		text-align: center;
-		bottom: 65vh;
-		color: #200724;
-		font-weight: bold;
-		font-family: CozetteVector, Courier, monospace;
-		z-index: 99999;
-	}
-	@media screen and (max-width: 600px) {
-		.title_container {
-			bottom: 60vh;
+	<style>
+		.debug {
+			position: fixed;
+			left: 0px;
+			top: 0px;
+			background: black;
+			color: white;
+			z-index: 99999999;
 		}
-	}
-	@media screen and (max-width: 500px) {
-		.title_container {
-			bottom: 77vh;
+		.visualContainer {
+			overflow: hidden;
+			position: sticky;
+			top: 0px;
+			left: 0px;
+			display: block;
+			width: 100%;
+			padding: 0 0px;
+			height: 100vh;
+			transition: opacity 200ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+			transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+			opacity: 0;
 		}
-	}
-	.title_container.title_container h1 {
-		font-size: 2em;
-	}
-	.title_container .byline {
-		font-size: 1.2em;
-		opacity: 0.6;
-	}
-	.chartTitles {
-		color: white;
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 100%;
-		padding: 0 10px;
-		text-align: center;
-		bottom: var(
-			--chartTitleLocY,
-			0
-		); /* Using CSS variable for dynamic positioning */
-	}
-	.legend_container {
-		color: white;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center; /* Centers items horizontally */
-		text-align: center;
-	}
-	.legend_title {
-		margin-bottom: 5px;
-		font-size: 1.5em;
-		padding-bottom: 0px;
-		line-height: 1em;
-		font-family: CozetteVector, Courier, monospace;
-	}
-	.legendItem {
-		flex: 0 0 auto;
-		align-items: center;
-		text-align: center;
-		justify-content: center;
-		color: var(--color-lightpurple);
-		white-space: normal;
-		margin: 2px;
-		padding: 0 4px;
-		min-width: 40px;
-		text-shadow: 0px 0px 4px #000;
-		font-size: 1.2em;
-		font-family: CozetteVector, Courier, monospace;
-	}
-	.zoomContainer {
-		width: 100%;
-		height: 100vh;
-		transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-		transform: perspective(0) translate3d(0, 0, 0) scale(1);
-		transform-origin: top left;
-	}
-	.scene_wrapper {
-		pointer-events: none;
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 100%;
-		height: 100vh;
-	}
-	.visualContainer.loadGraphic {
-		opacity: 1;
-	}
-	.reduceMotion-true .zoomContainer {
-		transition: none !important;
-	}
+		.visualContainer.reduceMotion-true,
+		.visualContainer.reduceMotion-true * {
+			transition: none !important;
+		}
+		.visualContainer.title {
+			background: #e9abff;
+			font-family: CozetteVector, Courier, monospace;
+		}
+		.visualContainer.end {
+			background: #a35c9e;
+		}
+		.title_container {
+			position: absolute;
+			left: 0%;
+			width: 100%;
+			text-align: center;
+			bottom: 65vh;
+			color: #200724;
+			font-weight: bold;
+			font-family: CozetteVector, Courier, monospace;
+			z-index: 99999;
+		}
+		@media screen and (max-width: 600px) {
+			.title_container {
+				bottom: 60vh;
+			}
+		}
+		@media screen and (max-width: 500px) {
+			.title_container {
+				bottom: 77vh;
+			}
+		}
+		.title_container.title_container h1 {
+			font-size: 2em;
+		}
+		.title_container .byline {
+			font-size: 1.2em;
+			opacity: 0.6;
+		}
+		.chartTitles {
+			color: white;
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 100%;
+			padding: 0 10px;
+			text-align: center;
+			bottom: var(
+				--chartTitleLocY,
+				0
+			); /* Using CSS variable for dynamic positioning */
+		}
+		.legend_container {
+			color: white;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center; /* Centers items horizontally */
+			text-align: center;
+		}
+		.legend_title {
+			margin-bottom: 5px;
+			font-size: 1.5em;
+			padding-bottom: 0px;
+			line-height: 1em;
+			font-family: CozetteVector, Courier, monospace;
+		}
+		.legendItem {
+			flex: 0 0 auto;
+			align-items: center;
+			text-align: center;
+			justify-content: center;
+			color: var(--color-lightpurple);
+			white-space: normal;
+			margin: 2px;
+			padding: 0 4px;
+			min-width: 40px;
+			text-shadow: 0px 0px 4px #000;
+			font-size: 1.2em;
+			font-family: CozetteVector, Courier, monospace;
+		}
+		.zoomContainer {
+			width: 100%;
+			height: 100vh;
+			transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+			transform: perspective(0) translate3d(0, 0, 0) scale(1);
+			transform-origin: top left;
+		}
+		.scene_wrapper {
+			pointer-events: none;
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100vh;
+		}
+		.visualContainer.loadGraphic {
+			opacity: 1;
+		}
+		.reduceMotion-true .zoomContainer {
+			transition: none !important;
+		}
 
-	.methods {
-		background: #a35c9e;
-		margin-top: -30px;
-		padding: 10px 0 100px;
-		z-index: 999999;
-	}
-	.methods .methods_container {
-		max-width: 620px;
-		margin: 0 auto;
-		padding: 0 10px;
-		box-sizing: border-box;
-	}
-	.methods .methods_container h2 {
-		font-family: CozetteVector, Courier, monospace;
-		font-size: var(--20px);
-		color: #f2d3ec;
-	}
-	.methods .methods_container div {
-		font-size: var(--14px);
-		line-height: var(--22px);
-		color: #4d1c44;
-		font-family: var(--sans);
-		color: #f2d3ec;
-	}
-	.videoTeaser {
-		position: fixed;
-		color: white;
-		bottom: 20px;
-		left: 50%;
-		transform: translateX(-50%);
-		text-align: center;
-		background: #000;
-		padding: 20px;
-		max-width: 500px;
-		width: 90%;
-		z-index: 999;
-	}
-	.videoTeaser a {
-		color: #fb04d3;
-	}
-	.videoTeaser a:hover {
-		opacity: 0.9;
-	}
-</style>
+		.methods {
+			background: #a35c9e;
+			margin-top: -30px;
+			padding: 10px 0 100px;
+			z-index: 999999;
+		}
+		.methods .methods_container {
+			max-width: 620px;
+			margin: 0 auto;
+			padding: 0 10px;
+			box-sizing: border-box;
+		}
+		.methods .methods_container h2 {
+			font-family: CozetteVector, Courier, monospace;
+			font-size: var(--20px);
+			color: #f2d3ec;
+		}
+		.methods .methods_container div {
+			font-size: var(--14px);
+			line-height: var(--22px);
+			color: #4d1c44;
+			font-family: var(--sans);
+			color: #f2d3ec;
+		}
+		.videoTeaser {
+			position: fixed;
+			color: white;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			text-align: center;
+			background: #000;
+			padding: 20px;
+			max-width: 500px;
+			width: 90%;
+			z-index: 999;
+		}
+		.videoTeaser a {
+			color: #fb04d3;
+		}
+		.videoTeaser a:hover {
+			opacity: 0.9;
+		}
+	</style>

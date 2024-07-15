@@ -121,7 +121,7 @@
 		top: 0px;
 		left: 0%;
 		width: 100%;
-/*		transition: opacity 2000ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+		/*transition: background-color 500ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
 		transition-timing-function: cubic-bezier(0.455, 0.030, 0.515, 0.955);*/
 		overflow: hidden;
 		pointer-events: none;

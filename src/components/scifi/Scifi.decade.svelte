@@ -50,7 +50,7 @@
 	{/if}
 	<div class="movie-container" style="opacity: {opacity};">
 		{#each movies as movie}
-		<Movie data={movie} position={positions[movie.index]} {viewType} sortedColumn={sortedColumn} {decade} {hl_movie_index}/>
+		<Movie data={movie} position={positions[movie.index]} {sortedColumn}/>
 		{/each}
 	</div>
 </div>
